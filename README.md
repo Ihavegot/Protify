@@ -1,9 +1,21 @@
-# Protify
+# *Protify - Music Player*
 
-TODO:
-All
+## Project created and maintained for the SKW - Frameworks course
 
-Protify music player
+## Technologies used
+- Spring & Spring Boot
+- PostgreSQL
+- Swagger
+- Remix
+
+## Team
+- Łukasz Bociański
+- Gabriel Maruszewski
+- Patryk Wałach
+
+## TODO
+
+- Everything
 
 ![Testy](https://pbs.twimg.com/media/CiLWjAQVEAIae7z.jpg)
 
