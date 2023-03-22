@@ -13,6 +13,14 @@
 - Gabriel Maruszewski
 - Patryk Wałach
 
+## Initialization
+
+Docker initialization command
+
+```
+docker run --name protify -e POSTGRES_PASSWORD= -e POSTGRES_DB=protify -e POSTGRES_HOST_AUTH_METHOD=trust -p 32770:5432 -d postgres
+```
+
 ## TODO
 
 - Everything
