@@ -10,20 +10,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 class ProtifyApplicationTests {
 
-//	@Test
-//	@DisplayName("Context Loads")
-//	void contextLoads() {
-//	}
-//
-//	@Test
-//	@DisplayName("Test1 - Home Controller")
-//	void testHomeController(){
-//		// Given
-//		HomeController homeController = new HomeController();
-//		// When
-//		String output = homeController.homeEndpoint();
-//		// Then
-//		assertEquals(output, "Protify Music Player API");
-//	}
+	@Test
+	@DisplayName("Context Loads")
+	void contextLoads() {
+	}
+
+	@Test
+	@DisplayName("Test1 - Home Controller")
+	void testHomeController(){
+		// Given
+		HomeController homeController = new HomeController();
+		// When
+		String output = homeController.homeEndpoint();
+		// Then
+		assertEquals(output, "Protify Music Player API");
+	}
 
 }
