@@ -12,5 +12,5 @@ public class Songs {
     @Id
     private int id;
     private String title;
-    private int artist_id;
+    private int artistId;
 }
