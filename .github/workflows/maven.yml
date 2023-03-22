@@ -36,12 +36,6 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Connect to PostgreSQL
-        run: node client.js
-        env:
-          POSTGRES_HOST: postgres
-          POSTGRES_PORT: 32770
-
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
