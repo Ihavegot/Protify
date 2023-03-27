@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.protify.Protify.models.Artist;
 import com.protify.Protify.models.Song;
+import com.protify.Protify.repository.ArtistRepository;
 import com.protify.Protify.repository.SongRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,17 +38,26 @@ class SongTest {
  @Autowired
      private SongRepository songRepository;
 
+ @Autowired
+ private ArtistRepository artistRepository;
+
 
  @BeforeEach
  public void beforeEach(){
+
      songRepository.deleteAll();
+     artistRepository.deleteAll();
  }
 
 
  @Test
     public void all() throws Exception {
+     var foo = artistRepository.save(Artist.builder().name("Foo").build());
+
      var entities = songRepository.saveAll(IntStream.range(0, 50).mapToObj((i)->
-             Song.builder().title("Title " +i).build()).toList());
+             Song.builder().title("Title " +i).artist(foo).build()).toList());
+
+
 
 
 
@@ -64,24 +74,36 @@ class SongTest {
              .andExpect(jsonPath("$._links.profile.href").value("http://localhost/profile/songs"))
              .andExpect(jsonPath("$._embedded.songs").isArray())
              .andExpect(jsonPath("$._embedded.songs", hasSize(20)))
-             .andExpect(jsonPath("$._embedded.songs[3]._links.artist.href").value("http://localhost/songs/"+entities.get(3).getId()+"/artist"))
+             .andExpect(jsonPath("$._embedded.songs[3]._links.artist.href").value("http://localhost/songs/"+entities.get(3).getId()+"/artist{?projection}"))
              .andExpect(jsonPath("$._embedded.songs[3]._links.self.href").value("http://localhost/songs/"+entities.get(3).getId()))
-             .andExpect(jsonPath("$._embedded.songs[3].title").value(entities.get(3).getTitle()));
+             .andExpect(jsonPath("$._embedded.songs[3].title").value(entities.get(3).getTitle()))
+             .andExpect(jsonPath("$._embedded.songs[3]._embedded.artist.name").value(foo.getName()))
+             .andExpect(jsonPath("$._embedded.songs[3]._embedded.artist._links.songs.href").value("http://localhost/artists/"+foo.getId()+"/songs"))
+             .andExpect(jsonPath("$._embedded.songs[3]._embedded.artist._links.self.href").value("http://localhost/artists/"+foo.getId()+"{?projection}"))
+             .andExpect(jsonPath("$._embedded.songs[3]._embedded.artist._links.self.templated").value(true))
+;
  }
 
 
     @Test
     public void one() throws Exception {
+        var foo = artistRepository.save(Artist.builder().name("Foo").build());
+
         var entities = songRepository.saveAll(IntStream.range(0, 50).mapToObj((i)->
-                Song.builder().title("Title " +i).build()).toList());
+                Song.builder().title("Title " +i).artist(foo).build()).toList());
 
 
 
         mvc.perform(get("/songs/"+entities.get(5).getId())      .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._links.self.href").value("http://localhost/songs/"+entities.get(5).getId()))
-                .andExpect(jsonPath("$._links.artist.href").value("http://localhost/songs/"+entities.get(5).getId()+"/artist"))
+                .andExpect(jsonPath("$._links.artist.href").value("http://localhost/songs/"+entities.get(5).getId()+"/artist{?projection}"))
                 .andExpect(jsonPath("$._links.self.href").value("http://localhost/songs/"+entities.get(5).getId()))
-                .andExpect(jsonPath("$.title").value(entities.get(5).getTitle()));
+                .andExpect(jsonPath("$.title").value(entities.get(5).getTitle()))
+                .andExpect(jsonPath("$._embedded.artist.name").value(foo.getName()))
+                .andExpect(jsonPath("$._embedded.artist._links.songs.href").value("http://localhost/artists/"+foo.getId()+"/songs"))
+                .andExpect(jsonPath("$._embedded.artist._links.self.href").value("http://localhost/artists/"+foo.getId()+"{?projection}"))
+                .andExpect(jsonPath("$._embedded.artist._links.self.templated").value(true))
+        ;
     }
 }
