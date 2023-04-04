@@ -1,8 +1,7 @@
 package com.protify.Protify.models;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Blob;
 import java.util.Set;
@@ -10,6 +9,8 @@ import java.util.Set;
 @Entity
 @Setter
 @Getter
+@Builder
+@AllArgsConstructor
 public class Songs {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,4 +23,6 @@ public class Songs {
 
     @ManyToMany(mappedBy = "songs")
     private Set<Playlist> playlists;
+
+    public Songs() {}
 }
