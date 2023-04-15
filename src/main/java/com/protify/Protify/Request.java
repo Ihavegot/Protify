@@ -6,8 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Request {
-    private int page;
     private int size;
-
+    private int page;
     public Request(){}
 }

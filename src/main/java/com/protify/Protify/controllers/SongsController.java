@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -27,13 +24,8 @@ public class SongsController {
     private final SongsModelAssembler songsModelAssembler;
     private final PagedResourcesAssembler<Songs> pagedResourcesAssembler;
     @GetMapping("/songs")
-    public PagedModel<SongsModel> getSongs(@RequestBody @Nullable Request req){
-        Page<Songs> songsPage;
-        if(req == null){
-            songsPage = songService.getSongs(20);
-        }else {
-            songsPage = songService.getSongs(req.getSize());
-        }
+    public PagedModel<SongsModel> getSongs(@RequestParam @Nullable Optional<Integer> size, @RequestParam @Nullable Optional<Integer> page){
+        Page<Songs> songsPage = songService.getSongs(page.orElse(0), size.orElse(20));
         return pagedResourcesAssembler.toModel(songsPage, songsModelAssembler);
     }
     @GetMapping("songs/{id}")
