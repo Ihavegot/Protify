@@ -53,22 +53,20 @@ class SongTest {
 
      mvc.perform(get("/songs")      .accept(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
-             .andExpect(jsonPath("$.size").value(20))
-             .andExpect(jsonPath("$.totalElements").value(50))
-             .andExpect(jsonPath("$.totalPages").value(3))
-             .andExpect(jsonPath("$.number").value(0));
-     // TODO: ADD HATEOAS
-
-//             .andExpect(jsonPath("$._links.self.href").value("http://localhost/songs"));
-//             .andExpect(jsonPath("$._links.first.href").value("http://localhost/songs?page=0&size=20"));
-//             .andExpect(jsonPath("$._links.next.href").value("http://localhost/songs?page=1&size=20"))
-//             .andExpect(jsonPath("$._links.last.href").value("http://localhost/songs?page=2&size=20"))
+             .andExpect(jsonPath("$.page.size").value(20))
+             .andExpect(jsonPath("$.page.totalElements").value(50))
+             .andExpect(jsonPath("$.page.totalPages").value(3))
+             .andExpect(jsonPath("$.page.number").value(0))
+             .andExpect(jsonPath("$._links.self.href").value("http://localhost/songs?page=0&size=20"))
+             .andExpect(jsonPath("$._links.first.href").value("http://localhost/songs?page=0&size=20"))
+             .andExpect(jsonPath("$._links.next.href").value("http://localhost/songs?page=1&size=20"))
+             .andExpect(jsonPath("$._links.last.href").value("http://localhost/songs?page=2&size=20"))
 //             .andExpect(jsonPath("$._links.profile.href").value("http://localhost/profile/songs"))
-//             .andExpect(jsonPath("$._embedded.songs").isArray())
-//             .andExpect(jsonPath("$._embedded.songs", hasSize(20)))
-//             .andExpect(jsonPath("$._embedded.songs[3]._links.artist.href").value("http://localhost/songs/"+entities.get(3).getId()+"/artist"))
-//             .andExpect(jsonPath("$._embedded.songs[3]._links.self.href").value("http://localhost/songs/"+entities.get(3).getId()))
-//             .andExpect(jsonPath("$._embedded.songs[3].title").value(entities.get(3).getTitle()));
+             .andExpect(jsonPath("$._embedded.songsModelList").isArray())
+             .andExpect(jsonPath("$._embedded.songsModelList", hasSize(20)))
+//             .andExpect(jsonPath("$._embedded.songsModelList[3]._links.artist.href").value("http://localhost/songs/"+entities.get(3).getId()+"/artist"))
+//             .andExpect(jsonPath("$._embedded.songsModelList[3]._links.self.href").value("http://localhost/songs/"+entities.get(3).getId()))
+             .andExpect(jsonPath("$._embedded.songsModelList[3].title").value(entities.get(3).getTitle()));
  }
 
 
@@ -81,9 +79,9 @@ class SongTest {
 
         mvc.perform(get("/songs/"+entities.get(5).getId())      .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-//                .andExpect(jsonPath("$._links.self.href").value("http://localhost/songs/"+entities.get(5).getId()))
-//                .andExpect(jsonPath("$._links.artist.href").value("http://localhost/songs/"+entities.get(5).getId()+"/artist"))
-//                .andExpect(jsonPath("$._links.self.href").value("http://localhost/songs/"+entities.get(5).getId()))
+                .andExpect(jsonPath("$._links.self.href").value("http://localhost/songs/"+entities.get(5).getId()))
+                .andExpect(jsonPath("$._links.artist.href").value("http://localhost/songs/"+entities.get(5).getId()+"/artist"))
+                .andExpect(jsonPath("$._links.self.href").value("http://localhost/songs/"+entities.get(5).getId()))
                 .andExpect(jsonPath("$.title").value(entities.get(5).getTitle()));
     }
 }

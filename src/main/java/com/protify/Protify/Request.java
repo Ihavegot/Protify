@@ -9,8 +9,5 @@ public class Request {
     private int page;
     private int size;
 
-    public Request(){
-        this.page = 0;
-        this.size = 20;
-    }
+    public Request(){}
 }
