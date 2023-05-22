@@ -38,5 +38,6 @@ Go to: http://localhost:8080/h2-console
 - Add SwaggerUI
 - Add basic endpoints
 - Create tests
+- Check Azure Blob Storage
  
  ![Testy](https://pbs.twimg.com/media/CiLWjAQVEAIae7z.jpg)
