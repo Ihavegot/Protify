@@ -1,6 +1,5 @@
 package com.protify.Protify.service;
 
-import com.protify.Protify.Request;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +14,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SongService {
     private final SongRepository songRepository;
-    public Page<Songs> getSongs(int page, int size){
-        return songRepository.findAll(PageRequest.of(page, size));
+    public Page<Songs> getSongs(Pageable page){
+        return songRepository.findAll(page);
     }
 
     public Optional<Songs> getSingleSong(long id){
