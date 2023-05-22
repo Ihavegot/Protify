@@ -1,16 +1,29 @@
 package com.protify.Protify.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
+
+import java.sql.Blob;
+import java.util.Set;
 
 @Entity
 @Setter
 @Getter
+@Builder
+@AllArgsConstructor
 public class Songs {
     @Id
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
     private String title;
-    private int artistId;
+    @ManyToOne
+    @JoinColumn(name = "artist")
+    private Artist artist;
+    private Blob songFile;
+
+    @ManyToMany(mappedBy = "songs")
+    private Set<Playlist> playlists;
+
+    public Songs() {}
 }
