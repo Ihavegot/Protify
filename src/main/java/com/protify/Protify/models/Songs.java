@@ -1,5 +1,6 @@
 package com.protify.Protify.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
@@ -23,6 +24,7 @@ public class Songs {
     private Blob songFile;
 
     @ManyToMany(mappedBy = "songs")
+    @JsonIgnore
     private Set<Playlist> playlists;
 
     public Songs() {}

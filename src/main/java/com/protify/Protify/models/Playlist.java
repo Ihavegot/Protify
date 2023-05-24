@@ -1,5 +1,8 @@
 package com.protify.Protify.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,5 +20,6 @@ public class Playlist {
     @JoinColumn(name = "user_id")
     private User user;
     @ManyToMany
+    @JsonIgnore
     private Set<Songs> songs;
 }
