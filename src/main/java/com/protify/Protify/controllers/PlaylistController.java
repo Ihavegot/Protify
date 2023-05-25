@@ -7,6 +7,7 @@ import com.protify.Protify.models.Songs;
 import com.protify.Protify.service.PlaylistService;
 import com.protify.Protify.service.SongService;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -28,7 +29,7 @@ public class PlaylistController {
     private final SongsModelAssembler songsModelAssembler;
 
     @GetMapping("/playlist")
-    public PagedModel<EntityModel<Playlist>> getPlaylist(Pageable page){
+    public PagedModel<EntityModel<Playlist>> getPlaylist(@ParameterObject Pageable page){
         Page<Playlist> playlistPage = playlistService.getPlaylist(page);
         return pagedResourcesAssembler.toModel(playlistPage, playlistModelAssembler);
     }
@@ -39,7 +40,7 @@ public class PlaylistController {
     }
 
     @GetMapping("/playlist/{id}/song")
-    public PagedModel<EntityModel<Songs>> getPlaylistSongs(@PathVariable("id") Long id, Pageable page){
+    public PagedModel<EntityModel<Songs>> getPlaylistSongs(@PathVariable("id") Long id,@ParameterObject  Pageable page){
         Page<Songs> songsPage = songService.getSongsByPlaylist(id, page);
         return songsPagedResourcesAssembler.toModel(songsPage, songsModelAssembler);
     }
