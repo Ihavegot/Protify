@@ -23,7 +23,7 @@ public class Songs {
     private Artist artist;
     private Blob songFile;
 
-    @ManyToMany(mappedBy = "songs")
+    @ManyToMany(mappedBy = "songs", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<Playlist> playlists;
 
