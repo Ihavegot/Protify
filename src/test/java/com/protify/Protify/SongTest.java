@@ -5,9 +5,12 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.protify.Protify.models.Artist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.repository.SongRepository;
@@ -78,5 +81,24 @@ class SongTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._links.self.href").value("http://localhost/songs/"+entities.get(5).getId()))
                 .andExpect(jsonPath("$.title").value(entities.get(5).getTitle()));
+    }
+
+    @Test
+    public void add() throws Exception{
+        var entities = songRepository.saveAll(IntStream.range(0, 50).mapToObj((i)->
+                Songs.builder().title("Title " +i).build()).toList());
+
+        Songs newSong = new Songs(entities.size()+1, "New song", null, null, null);
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = ow.writeValueAsString(newSong);
+
+        mvc.perform(post("/songs")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(newSong.getId()))
+                .andExpect(jsonPath("$.title").value(newSong.getTitle()))
+                .andExpect(jsonPath("$.artist").value(newSong.getArtist()))
+                .andExpect(jsonPath("$.songFile").value(newSong.getSongFile()));
     }
 }

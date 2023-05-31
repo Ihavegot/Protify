@@ -11,10 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,5 +30,26 @@ public class SongsController {
     @GetMapping("/songs/{id}")
     public EntityModel<Songs> getSingleSong(@PathVariable("id") Songs songs){
         return songsModelAssembler.toModel(songs);
+    }
+
+    // TODO: ogarnac sposob przekazywania danych, RequestBody czy inny?
+    @PostMapping("/songs")
+    public Songs addSingleSong(@RequestBody Songs song){
+        // id - long auto increment
+        // title - string
+        // artist - Artist
+        // songfile - Blob nullable
+        // playlists - Set<Playlist>
+        return songService.addSingleSong(song);
+    }
+
+    @PutMapping("songs/{id}")
+    public void updateSingleSong(){
+
+    }
+
+    @DeleteMapping("songs/{id}")
+    public void deleteSingleSong(@PathVariable("id") long id){
+        songService.deleteSingleSong(id);
     }
 }
