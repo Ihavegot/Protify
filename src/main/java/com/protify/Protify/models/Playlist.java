@@ -6,12 +6,14 @@ import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.hateoas.server.core.Relation;
 
 import java.util.Set;
 
 @Entity
 @Setter
 @Getter
+@Relation(collectionRelation = "playlists", itemRelation = "playlist")
 public class Playlist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
