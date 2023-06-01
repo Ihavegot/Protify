@@ -85,19 +85,15 @@ class SongTest {
 
      var page = traverson.follow(Hop.rel("songs")
                      .withParameter("page", 1)
-                     .withParameter("sort", "id"))
+                     .withParameter("sort", "id")).follow("last", "prev", "first", "next", "self")
              .toObject(new ParameterizedTypeReference<PagedModel<EntityModel<Songs>>>(){});
 
- 
+
 
      softly.assertThat(page.getMetadata().getSize()).isEqualTo(20);
      softly.assertThat(page.getMetadata().getTotalElements()).isEqualTo(50);
      softly.assertThat(page.getMetadata().getTotalPages()).isEqualTo(3);
      softly.assertThat(page.getMetadata().getNumber()).isEqualTo(1);
-     softly.assertThat(page.getRequiredLink(IanaLinkRelations.SELF)).isEqualTo(Link.of("http://localhost:"+port+"/songs?page=1&size=20&sort=id,asc").withRel(IanaLinkRelations.SELF)) ;
-     softly.assertThat(page.getRequiredLink(IanaLinkRelations.FIRST)).isEqualTo(Link.of("http://localhost:"+port+"/songs?page=0&size=20&sort=id,asc").withRel(IanaLinkRelations.FIRST)) ;
-     softly.assertThat(page.getNextLink().orElse(null)).isEqualTo(Link.of("http://localhost:"+port+"/songs?page=2&size=20&sort=id,asc").withRel(IanaLinkRelations.NEXT)) ;
-     softly.assertThat(page.getPreviousLink().orElse(null)).isEqualTo(Link.of("http://localhost:"+port+"/songs?page=0&size=20&sort=id,asc").withRel(IanaLinkRelations.PREV)) ;
      softly.assertThat(page.getContent()).hasSize(20);
     softly.assertThat( page.getContent().stream().toList().get(3).getContent().getId()).isEqualTo(entities.get(23).getId());
 
@@ -111,10 +107,12 @@ class SongTest {
                 Songs.builder().title("Title " +i).build()).toList());
 
 
+        EntityModel<Songs> song = traverson.follow("songs", "$._embedded.songs[5]._links.self.href", "self")
+                .toObject(new ParameterizedTypeReference<EntityModel<Songs>>() {
+                });
 
-//        mvc.perform(get("/songs/"+entities.get(5).getId()).accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$._links.self.href").value("http://localhost/songs/"+entities.get(5).getId()))
-//                .andExpect(jsonPath("$.title").value(entities.get(5).getTitle()));
+
+        softly.assertThat(song.getContent().getId()).isEqualTo(entities.get(5).getId());
+        softly.assertThat(song.getContent().getTitle()).isEqualTo(entities.get(5).getTitle());
     }
 }

@@ -14,6 +14,7 @@ import com.protify.Protify.repository.SongRepository;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.assertj.core.util.Streams;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,10 +31,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
- 
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ProtifyApplication.class)
 @ExtendWith(SoftAssertionsExtension.class)
 
@@ -45,7 +49,7 @@ class PlaylistTest {
     @BeforeEach
     public void beforeEach(){
         playlistRepository.deleteAll();
-
+songsRepository.deleteAll();
         traverson = new Traverson(URI.create("http://localhost:"+port+"/"), MediaTypes.HAL_JSON);
 
     }
@@ -77,6 +81,7 @@ class PlaylistTest {
         var page = traverson.follow(Hop.rel("playlists")
                         .withParameter("page", 1)
                         .withParameter("sort", "id"))
+                .follow("last", "prev", "first", "next", "self")
                 .toObject(new ParameterizedTypeReference<PagedModel<EntityModel<Songs>>>(){});
 
 
@@ -85,10 +90,6 @@ class PlaylistTest {
         softly.assertThat(page.getMetadata().getTotalElements()).isEqualTo(50);
         softly.assertThat(page.getMetadata().getTotalPages()).isEqualTo(3);
         softly.assertThat(page.getMetadata().getNumber()).isEqualTo(1);
-        softly.assertThat(page.getRequiredLink(IanaLinkRelations.SELF)).isEqualTo(Link.of("http://localhost:"+port+"/playlists?page=1&size=20&sort=id,asc").withRel(IanaLinkRelations.SELF)) ;
-        softly.assertThat(page.getRequiredLink(IanaLinkRelations.FIRST)).isEqualTo(Link.of("http://localhost:"+port+"/playlists?page=0&size=20&sort=id,asc").withRel(IanaLinkRelations.FIRST)) ;
-        softly.assertThat(page.getNextLink().orElse(null)).isEqualTo(Link.of("http://localhost:"+port+"/playlists?page=2&size=20&sort=id,asc").withRel(IanaLinkRelations.NEXT)) ;
-        softly.assertThat(page.getPreviousLink().orElse(null)).isEqualTo(Link.of("http://localhost:"+port+"/playlists?page=0&size=20&sort=id,asc").withRel(IanaLinkRelations.PREV)) ;
         softly.assertThat(page.getContent()).hasSize(20);
         softly.assertThat( page.getContent().stream().toList().get(3).getContent().getId()).isEqualTo(entities.get(23).getId());
 
@@ -101,11 +102,39 @@ class PlaylistTest {
         var entities = playlistRepository.saveAll(IntStream.range(0, 50).mapToObj((i)->
                 Playlist.builder().build()).toList());
 
+        EntityModel<Playlist> entity = traverson.follow("playlists", "$._embedded.playlists[5]._links.self.href", "self")
+                .toObject(new ParameterizedTypeReference<>() {
+                });
+
+        softly.assertThat(entity.getContent().getId()).isEqualTo(entities.get(5).getId());
+    }
+
+    @Autowired
+    private SongRepository songsRepository;
 
 
-//        mvc.perform(get("/playlists/"+entities.get(5).getId()).accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$._links.self.href").value("http://localhost/playlists/"+entities.get(5).getId()))
-//                .andExpect(jsonPath("$.title").value(entities.get(5).getTitle()));
+    @Test
+    public void songs() throws Exception {
+        var songs = songsRepository.saveAll(
+                Stream.generate(Songs::new).limit(50).toList()
+        );
+
+        var entities = playlistRepository.saveAll(IntStream.range(0, 50).mapToObj((i)->
+                Playlist.builder().songs(new HashSet<>(songs.subList(0, i))).build()).toList());
+
+        PagedModel<EntityModel<Songs>> page = traverson.follow("playlists", "next", "$._embedded.playlists[10]._links.self.href")
+                .follow(Hop.rel("songs").withParameter("page", 1).withParameter("sort", "id"))
+                .follow("first", "next", "prev", "last",  "self")
+                .toObject(new ParameterizedTypeReference<>() {
+                });
+
+        softly.assertThat(page.getMetadata().getSize()).isEqualTo(20);
+        softly.assertThat(page.getMetadata().getTotalElements()).isEqualTo(30);
+        softly.assertThat(page.getMetadata().getTotalPages()).isEqualTo(2);
+        softly.assertThat(page.getMetadata().getNumber()).isEqualTo(1);
+        softly.assertThat(page.getContent()).hasSize(10);
+        softly.assertThat( page.getContent().stream().toList().get(3).getContent().getId()).isEqualTo(entities.get(23).getId());
+
+
     }
 }
