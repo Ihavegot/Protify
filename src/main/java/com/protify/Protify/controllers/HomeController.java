@@ -32,12 +32,18 @@ public class HomeController {
 
 
 List.of(
-      
-        links.linkToCollectionResource(Songs.class)
-        .withRel(        linkRelationProvider.getCollectionResourceRelFor(Songs.class)),
 
-        links.linkToCollectionResource(Playlist.class).withRel(        linkRelationProvider.getCollectionResourceRelFor(Playlist.class))
+
+        linkTo(methodOn(SongsController.class)
+                .getSongs(null, null, null, null))
+                .withRel(        linkRelationProvider.getCollectionResourceRelFor(Songs.class)),
+
+        linkTo(methodOn(PlaylistController.class)
+                .getPlaylist(null, null, null, null))
+                .withRel(        linkRelationProvider.getCollectionResourceRelFor(Playlist.class))
 )
+
+
                 );
     }
 }
