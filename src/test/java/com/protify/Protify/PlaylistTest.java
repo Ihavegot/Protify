@@ -133,7 +133,7 @@ songsRepository.deleteAll();
         softly.assertThat(page.getMetadata().getTotalPages()).isEqualTo(2);
         softly.assertThat(page.getMetadata().getNumber()).isEqualTo(1);
         softly.assertThat(page.getContent()).hasSize(10);
-        softly.assertThat( page.getContent().stream().toList().get(3).getContent().getId()).isEqualTo(entities.get(23).getId());
+        softly.assertThat( page.getContent().stream().toList().get(3).getContent().getId()).isEqualTo(songs.get(23).getId());
 
 
     }
