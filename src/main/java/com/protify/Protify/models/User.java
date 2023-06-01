@@ -1,5 +1,6 @@
 package com.protify.Protify.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +17,7 @@ public class User{
     private long id;
     private String email;
     private String login;
-    private String password;
+    @JsonIgnore
+  private String password;
 
 }

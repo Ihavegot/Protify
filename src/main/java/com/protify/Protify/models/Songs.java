@@ -20,8 +20,8 @@ public class Songs {
     private String title;
     @ManyToOne
     @JoinColumn(name = "artist")
-    private Artist artist;
-    private Blob songFile;
+   @JsonIgnore private Artist artist;
+    @JsonIgnore private Blob songFile;
 
     @ManyToMany(mappedBy = "songs", cascade = CascadeType.ALL)
     @JsonIgnore
