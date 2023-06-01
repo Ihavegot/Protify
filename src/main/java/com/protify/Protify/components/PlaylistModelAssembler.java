@@ -17,6 +17,6 @@ public class PlaylistModelAssembler implements RepresentationModelAssembler<Play
     public EntityModel<Playlist> toModel(Playlist entity) {
         return EntityModel.of(entity).add(
                 linkTo(methodOn(PlaylistController.class).getSinglePlaylist(entity)).withSelfRel()
-        ).add(linkTo(methodOn(PlaylistController.class).getPlaylistSongs(entity.getId(),null)).withRel("songs"));
+        ).add(linkTo(methodOn(PlaylistController.class).getPlaylistSongs(entity.getId(),null,null,null,null)).withRel("songs"));
     }
 }
