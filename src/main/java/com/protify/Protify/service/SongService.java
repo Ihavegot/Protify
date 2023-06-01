@@ -30,6 +30,21 @@ public class SongService {
         return songRepository.save(song);
     }
 
+    public Optional<Songs> updateSingleSong(Songs song){
+        return songRepository.findById(song.getId()).map(b -> {
+            if (song.getTitle() != null) {
+                b.setTitle(song.getTitle());
+            }
+            if(song.getSongFile() != null){
+                b.setSongFile(song.getSongFile());
+            }
+            if(song.getArtist() != null){
+                b.setArtist(song.getArtist());
+            }
+            return songRepository.save(b);
+        });
+    }
+
     public void deleteSingleSong(long id){
         songRepository.deleteById(id);
     }

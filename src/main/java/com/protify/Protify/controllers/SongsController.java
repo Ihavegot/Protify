@@ -13,6 +13,8 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
 public class SongsController {
@@ -35,17 +37,12 @@ public class SongsController {
     // TODO: ogarnac sposob przekazywania danych, RequestBody czy inny?
     @PostMapping("/songs")
     public Songs addSingleSong(@RequestBody Songs song){
-        // id - long auto increment
-        // title - string
-        // artist - Artist
-        // songfile - Blob nullable
-        // playlists - Set<Playlist>
         return songService.addSingleSong(song);
     }
 
-    @PutMapping("songs/{id}")
-    public void updateSingleSong(){
-
+    @PutMapping("songs")
+    public Optional<Songs> updateSingleSong(@RequestBody Songs song){
+        return songService.updateSingleSong(song);
     }
 
     @DeleteMapping("songs/{id}")
