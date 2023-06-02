@@ -1,17 +1,18 @@
 package com.protify.Protify.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.hateoas.server.core.Relation;
 
-@Entity(name = "\"User\"")
+import java.util.List;
+
+@Entity(name = "\"user\"")
 @Setter
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Relation(collectionRelation = "users", itemRelation = "user")
 public class User{
     @Id
@@ -22,4 +23,7 @@ public class User{
     @JsonIgnore
   private String password;
 
+
+    @OneToMany( mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore  private List<Playlist> playlists;
 }
