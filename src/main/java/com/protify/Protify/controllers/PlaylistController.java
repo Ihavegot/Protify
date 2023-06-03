@@ -58,4 +58,19 @@ public class PlaylistController {
         Page<Songs> songsPage = songService.getSongsByPlaylist(id,page);
         return songsPagedResourcesAssembler.toModel(songsPage, songsModelAssembler);
     }
+
+    @PostMapping("/playlist")
+    public Playlist addSinglePlaylist(@RequestBody Playlist playlist){
+        return playlistService.addSinglePlaylist(playlist);
+    }
+
+    @PutMapping("playlist")
+    public Optional<Playlist> updateSinglePlaylist(@RequestBody Playlist playlist){
+        return playlistService.updateSinglePlaylist(playlist);
+    }
+
+    @DeleteMapping("playlist/{id}")
+    public void deleteSinglePlaylist(@PathVariable("id") long id){
+        playlistService.deleteSinglePlaylist(id);
+    }
 }
