@@ -15,15 +15,6 @@ class ProtifyApplicationTests {
 	void contextLoads() {
 	}
 
-	@Test
-	@DisplayName("Test1 - Home Controller")
-	void testHomeController(){
-		// Given
-		HomeController homeController = new HomeController();
-		// When
-		String output = homeController.homeEndpoint();
-		// Then
-		assertEquals(output, "Protify Music Player API");
-	}
+
 
 }

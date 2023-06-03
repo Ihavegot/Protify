@@ -3,10 +3,12 @@ package com.protify.Protify.models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.hateoas.server.core.Relation;
 
 @Entity
 @Setter
 @Getter
+@Relation(collectionRelation = "scores", itemRelation = "score")
 public class Score {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

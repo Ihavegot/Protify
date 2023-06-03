@@ -1,3 +1,55 @@
+INSERT INTO "user" (email, login, password) VALUES
+('john@example.com', 'john123', 'password123'),
+('alice@example.com', 'alice123', 'password123'),
+('bob@example.com', 'bob123', 'password123'),
+('jane@example.com', 'jane123', 'password123'),
+('mark@example.com', 'mark123', 'password123'),
+('sarah@example.com', 'sarah123', 'password123'),
+('peter@example.com', 'peter123', 'password123'),
+('emily@example.com', 'emily123', 'password123'),
+('david@example.com', 'david123', 'password123'),
+('anna@example.com', 'anna123', 'password123'),
+('mike@example.com', 'mike123', 'password123'),
+('amy@example.com', 'amy123', 'password123'),
+('tom@example.com', 'tom123', 'password123'),
+('lisa@example.com', 'lisa123', 'password123'),
+('eric@example.com', 'eric123', 'password123'),
+('chris@example.com', 'chris123', 'password123'),
+('kate@example.com', 'kate123', 'password123'),
+('julia@example.com', 'julia123', 'password123'),
+('sam@example.com', 'sam123', 'password123'),
+('olivia@example.com', 'olivia123', 'password123'),
+('max@example.com', 'max123', 'password123'),
+('lucas@example.com', 'lucas123', 'password123'),
+('leo@example.com', 'leo123', 'password123'),
+('emma@example.com', 'emma123', 'password123'),
+('jake@example.com', 'jake123', 'password123'),
+('matt@example.com', 'matt123', 'password123'),
+('jennifer@example.com', 'jennifer123', 'password123'),
+('ava@example.com', 'ava123', 'password123'),
+('benjamin@example.com', 'benjamin123', 'password123'),
+('daniel@example.com', 'daniel123', 'password123'),
+('victoria@example.com', 'victoria123', 'password123'),
+('natalie@example.com', 'natalie123', 'password123'),
+('alex@example.com', 'alex123', 'password123'),
+('anna@example.com', 'anna123', 'password123'),
+('maya@example.com', 'maya123', 'password123'),
+('paul@example.com', 'paul123', 'password123'),
+('jason@example.com', 'jason123', 'password123'),
+('george@example.com', 'george123', 'password123'),
+('sophia@example.com', 'sophia123', 'password123'),
+('lily@example.com', 'lily123', 'password123'),
+('owen@example.com', 'owen123', 'password123'),
+('jacob@example.com', 'jacob123', 'password123'),
+('zoey@example.com', 'zoey123', 'password123'),
+('charlotte@example.com', 'charlotte123', 'password123'),
+('violet@example.com', 'violet123', 'password123'),
+('liam@example.com', 'liam123', 'password123'),
+('ella@example.com', 'ella123', 'password123'),
+('avery@example.com', 'avery123', 'password123'),
+('madison@example.com', 'madison123', 'password123'),
+('jayden@example.com', 'jayden123', 'password123');
+
 INSERT INTO artist (artist_name, name, surname) VALUES
                                                     ('AC/DC', 'Malcolm', 'Young'),
                                                     ('AC/DC', 'Angus', 'Young'),
@@ -104,3 +156,86 @@ INSERT INTO songs (title, artist, song_file) VALUES
                                                    ('Diamonds', 10, null),
                                                    ('Work', 10, null),
                                                    ('We Found Love', 10, null);
+
+INSERT INTO playlist (user_id) VALUES (1);
+INSERT INTO playlist (user_id) VALUES (2);
+INSERT INTO playlist (user_id) VALUES (3);
+INSERT INTO playlist (user_id) VALUES (4);
+INSERT INTO playlist (user_id) VALUES (5);
+INSERT INTO playlist (user_id) VALUES (1);
+INSERT INTO playlist (user_id) VALUES (2);
+INSERT INTO playlist (user_id) VALUES (3);
+INSERT INTO playlist (user_id) VALUES (4);
+INSERT INTO playlist (user_id) VALUES (5);
+INSERT INTO playlist (user_id) VALUES (1);
+INSERT INTO playlist (user_id) VALUES (2);
+INSERT INTO playlist (user_id) VALUES (3);
+INSERT INTO playlist (user_id) VALUES (4);
+INSERT INTO playlist (user_id) VALUES (5);
+INSERT INTO playlist (user_id) VALUES (1);
+INSERT INTO playlist (user_id) VALUES (2);
+INSERT INTO playlist (user_id) VALUES (3);
+INSERT INTO playlist (user_id) VALUES (4);
+INSERT INTO playlist (user_id) VALUES (5);
+INSERT INTO playlist (user_id) VALUES (1);
+INSERT INTO playlist (user_id) VALUES (2);
+INSERT INTO playlist (user_id) VALUES (3);
+INSERT INTO playlist (user_id) VALUES (4);
+INSERT INTO playlist (user_id) VALUES (5);
+INSERT INTO playlist (user_id) VALUES (1);
+INSERT INTO playlist (user_id) VALUES (2);
+INSERT INTO playlist (user_id) VALUES (3);
+INSERT INTO playlist (user_id) VALUES (4);
+INSERT INTO playlist (user_id) VALUES (5);
+INSERT INTO playlist (user_id) VALUES (1);
+INSERT INTO playlist (user_id) VALUES (2);
+INSERT INTO playlist (user_id) VALUES (3);
+INSERT INTO playlist (user_id) VALUES (4);
+INSERT INTO playlist (user_id) VALUES (5);
+INSERT INTO playlist (user_id) VALUES (1);
+INSERT INTO playlist (user_id) VALUES (2);
+INSERT INTO playlist (user_id) VALUES (3);
+INSERT INTO playlist (user_id) VALUES (4);
+INSERT INTO playlist (user_id) VALUES (5);
+INSERT INTO playlist (user_id) VALUES (1);
+INSERT INTO playlist (user_id) VALUES (2);
+INSERT INTO playlist (user_id) VALUES (3);
+INSERT INTO playlist (user_id) VALUES (4);
+INSERT INTO playlist (user_id) VALUES (5);
+INSERT INTO playlist (user_id) VALUES (1);
+INSERT INTO playlist (user_id) VALUES (2);
+INSERT INTO playlist (user_id) VALUES (3);
+INSERT INTO playlist (user_id) VALUES (4);
+INSERT INTO playlist (user_id) VALUES (5);
+--many to many
+INSERT INTO playlist_songs (playlists_id, songs_id)
+VALUES
+(1, 1),
+(1, 2),
+(1, 3),
+(2, 4),
+(2, 5),
+(2, 6),
+(3, 1),
+(3, 3),
+(3, 5),
+(4, 2),
+(4, 4),
+(4, 6),
+(5, 1),
+(5, 4),
+(5, 5),
+(6, 2),
+(6, 3),
+(6, 6),
+(7, 1),
+(7, 2),
+(7, 5),
+(8, 3),
+(8, 4),
+(8, 6),
+(9, 1),
+(9, 6),
+(10, 2),
+(10, 4),
+(10, 5);

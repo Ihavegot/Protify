@@ -4,7 +4,6 @@ import com.protify.Protify.models.Songs;
 import com.protify.Protify.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +21,8 @@ public class SongService {
         return songRepository.findById(id);
     }
 
+
     public Page<Songs> getSongsByArtist(Long id, Pageable page) {return  songRepository.findByArtistId(id, page);
+    public Page<Songs> getSongsByPlaylist(Long id, Pageable page) {return songRepository.findAllByPlaylistsId(id, page);
     }
 }

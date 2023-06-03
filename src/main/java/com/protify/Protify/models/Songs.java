@@ -1,8 +1,10 @@
 package com.protify.Protify.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import java.sql.Blob;
 import java.util.Set;
@@ -12,6 +14,7 @@ import java.util.Set;
 @Getter
 @Builder
 @AllArgsConstructor
+@Relation(collectionRelation = "songs", itemRelation = "song")
 public class Songs {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +25,8 @@ public class Songs {
     private Artist artist;
     private Blob songFile;
 
-    @ManyToMany(mappedBy = "songs")
+    @ManyToMany(mappedBy = "songs", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Playlist> playlists;
 
     public Songs() {}
