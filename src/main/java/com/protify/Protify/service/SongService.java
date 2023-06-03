@@ -22,7 +22,6 @@ public class SongService {
     }
 
 
-    public Page<Songs> getSongsByArtist(Long id, Pageable page) {return  songRepository.findByArtistId(id, page);
-    public Page<Songs> getSongsByPlaylist(Long id, Pageable page) {return songRepository.findAllByPlaylistsId(id, page);
-    }
+    public Page<Songs> getSongsByArtist(Long id, Pageable page) {return  songRepository.findByArtistId(id, page);}
+    public Page<Songs> getSongsByPlaylist(Long id, Pageable page) {return songRepository.findAllByPlaylistsId(id, page); }
 }
