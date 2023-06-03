@@ -20,12 +20,12 @@ public class Songs {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String title;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "artist")
-    private Artist artist;
-    private Blob songFile;
+   @JsonIgnore private Artist artist;
+    @JsonIgnore private Blob songFile;
 
-    @ManyToMany(mappedBy = "songs", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "songs", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private Set<Playlist> playlists;
 
