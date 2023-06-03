@@ -22,10 +22,10 @@ public class Playlist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
-    private User user;
-    @ManyToMany
+  @JsonIgnore  private User user;
+    @ManyToMany( cascade = CascadeType.REMOVE)
     @JsonIgnore
     private Set<Songs> songs;
 
