@@ -17,8 +17,7 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.text.html.parser.Entity;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @Component
 @RequiredArgsConstructor
@@ -26,8 +25,7 @@ public class PlaylistModelAssembler implements RepresentationModelAssembler<Play
 
     private final EntityLinks links;
 
-    private  final LinkRelationProvider linkRelationProvider;
-
+    private final LinkRelationProvider linkRelationProvider;
 
 
     @Override
@@ -35,23 +33,29 @@ public class PlaylistModelAssembler implements RepresentationModelAssembler<Play
 
 
         HalModelBuilder builder = HalModelBuilder.halModelOf(entity)
-                .link(links.linkToItemResource(entity, Playlist::getId))
-                .link(linkTo(methodOn(PlaylistController.class).getPlaylistSongs(entity.getId(),null, null, null, null)).withRel(
+                .link(links.linkToItemResource(entity, Playlist::getId)
+                        .andAffordance(afford(methodOn(PlaylistController.class).deleteSinglePlaylist(entity.getId())))
+                        .andAffordance(afford(methodOn(PlaylistController.class).updateSinglePlaylist(entity)))
+                )
+                .link(linkTo(methodOn(PlaylistController.class).getPlaylistSongs(entity.getId(), null, null, null, null)).withRel(
                         linkRelationProvider.getCollectionResourceRelFor(Songs.class)
-                ));
+                ))
+                //.link(linkTo(methodOn(PlaylistController.class).deleteSinglePlaylist(entity.getId())))
+                //.link(linkTo(methodOn(PlaylistController.class).updateSinglePlaylist(entity)))
+                ;
 
 
-        if(entity.getUser() != null){
+        if (entity.getUser() != null) {
             builder = builder
                     //            TODO: replace `embed` with `preview`
                     .embed(entity.getUser())
 
 //                    .forLink( links.linkToItemResource(entity.getUser(), User::getId) .withRel( linkRelationProvider.getItemResourceRelFor(User.class)))
-;
+            ;
         }
 
-        return (EntityModel<Playlist>)builder
-               .build();
+        return (EntityModel<Playlist>) builder
+                .build();
 
     }
 }

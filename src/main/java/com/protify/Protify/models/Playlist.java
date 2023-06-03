@@ -25,7 +25,7 @@ public class Playlist {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
   @JsonIgnore  private User user;
-    @ManyToMany( cascade = CascadeType.REMOVE)
+    @ManyToMany
     @JsonIgnore
     private Set<Songs> songs;
 
