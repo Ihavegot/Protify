@@ -98,15 +98,12 @@ var response = traverson.follow(Hop.rel("playlists")
         softly.assertThat(page.getMetadata().getTotalPages()).isEqualTo(3);
         softly.assertThat(page.getMetadata().getNumber()).isEqualTo(1);
         softly.assertThat(page.getContent()).hasSize(20);
-        softly.assertThat( page.getContent().stream().toList().get(3).getContent().getId()).isEqualTo(entities.get(23).getId());
+        ModelValidators.validatePlaylist(softly, page.getContent().stream().toList().get(3).getContent(), entities.get(23));
 
         //        and _embedded.user
 
         User author = new ObjectMapper().convertValue(response.toObject("$._embedded.playlists[3]._embedded.user"), User.class);
-        softly.assertThat(author.getId()).isEqualTo(entities.get(23).getUser().getId());
-        softly.assertThat(author.getPassword()).isNull();
-        softly.assertThat(author.getEmail()).isEqualTo(entities.get(23).getUser().getEmail());
-        softly.assertThat(author.getLogin()).isEqualTo(entities.get(23).getUser().getLogin());
+        ModelValidators.validateUser(softly, author, entities.get(23).getUser());
     }
 
 
@@ -126,16 +123,16 @@ var response = traverson.follow(Hop.rel("playlists")
                 .toObject(new ParameterizedTypeReference<>() {
                 });
 
-        softly.assertThat(entity.getContent().getId()).isEqualTo(entities.get(5).getId());
+
+        ModelValidators.validatePlaylist(softly, entity.getContent(), entities.get(5));
 
     //        and _embedded.user
 
         User author = new ObjectMapper().convertValue(response.toObject("$._embedded.user"), User.class);
 
-        softly.assertThat(author.getId()).isEqualTo(entities.get(5).getUser().getId());
-        softly.assertThat(author.getPassword()).isNull();
-        softly.assertThat(author.getEmail()).isEqualTo(entities.get(5).getUser().getEmail());
-        softly.assertThat(author.getLogin()).isEqualTo(entities.get(5).getUser().getLogin());
+
+
+        ModelValidators.validateUser(softly, author, entities.get(5).getUser());
     }
 
     @Autowired
@@ -173,14 +170,10 @@ var response = traverson.follow(Hop.rel("playlists")
         softly.assertThat(page.getMetadata().getNumber()).isEqualTo(1);
         softly.assertThat(page.getContent()).hasSize(10);
 
-        softly.assertThat( page.getContent().stream().toList().get(3).getContent().getId()).isEqualTo(songs.get(23).getId());
-        softly.assertThat( page.getContent().stream().toList().get(3).getContent().getTitle()).isEqualTo(songs.get(23).getTitle());
+        ModelValidators.validateSongs(softly, page.getContent().stream().toList().get(3).getContent(), songs.get(23));
         //        and _embedded.artist
 
         Artist artist = new ObjectMapper().convertValue(response.toObject("$._embedded.songs[3]._embedded.artist"), Artist.class);
-        softly.assertThat(artist.getId()).isEqualTo(songs.get(23).getArtist().getId());
-        softly.assertThat(artist.getArtistName()).isEqualTo(songs.get(23).getArtist().getArtistName());
-        softly.assertThat(artist.getName()).isEqualTo(songs.get(23).getArtist().getName());
-        softly.assertThat(artist.getSurname()).isEqualTo(songs.get(23).getArtist().getSurname());
+        ModelValidators.validateArtist(softly, artist, songs.get(23).getArtist());
     }
 }
