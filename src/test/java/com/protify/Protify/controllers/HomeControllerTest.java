@@ -7,9 +7,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.protify.Protify.ProtifyApplication;
 import com.protify.Protify.models.Songs;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +32,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import java.net.URI;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ProtifyApplication.class)
-@AutoConfigureMockMvc
+@ExtendWith(SoftAssertionsExtension.class)
 class HomeControllerTest {
  @Autowired
     private MockMvc mvc;
@@ -44,6 +48,9 @@ class HomeControllerTest {
 
     }
 
+    @InjectSoftAssertions
+    private SoftAssertions softly;
+
     @ParameterizedTest
     @CsvSource({"songs","playlists"})
     void links(String rel) throws Exception {
@@ -55,8 +62,10 @@ class HomeControllerTest {
                 .toObject(new ParameterizedTypeReference<PagedModel<Object>>() {
                 });
 
-        Assertions.assertNotNull(page);
 
+
+        softly.assertThat(page.getMetadata().getNumber()).isEqualTo(1);
+        softly.assertThat(page.getMetadata().getSize()).isEqualTo(20);
     }
 
 
