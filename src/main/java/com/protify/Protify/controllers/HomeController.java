@@ -21,29 +21,28 @@ import java.util.List;
 public class HomeController {
     private final EntityLinks links;
 
-    private  final LinkRelationProvider linkRelationProvider;
+    private final LinkRelationProvider linkRelationProvider;
 
     @GetMapping("/")
-    public RepresentationModel<?> homeEndpoint(){
-
+    public RepresentationModel<?> homeEndpoint() {
 
 
         return RepresentationModel.of(null,
 
 
-List.of(
+                List.of(
 
 
-        linkTo(methodOn(SongsController.class)
-                .getSongs(null, null, null, null))
-                .withRel(        linkRelationProvider.getCollectionResourceRelFor(Songs.class)),
+                        linkTo(methodOn(SongsController.class)
+                                .getSongs(null, null, null, null))
+                                .withRel(linkRelationProvider.getCollectionResourceRelFor(Songs.class)),
 
-        linkTo(methodOn(PlaylistController.class)
-                .getPlaylist(null, null, null, null))
-                .withRel(        linkRelationProvider.getCollectionResourceRelFor(Playlist.class))
-)
+                        linkTo(methodOn(PlaylistController.class)
+                                .getPlaylist(null, null, null, null))
+                                .withRel(linkRelationProvider.getCollectionResourceRelFor(Playlist.class))
+                )
 
 
-                );
+        );
     }
 }
