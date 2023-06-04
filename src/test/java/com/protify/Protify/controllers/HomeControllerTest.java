@@ -34,8 +34,6 @@ import java.net.URI;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ProtifyApplication.class)
 @ExtendWith(SoftAssertionsExtension.class)
 class HomeControllerTest {
- @Autowired
-    private MockMvc mvc;
 
 
     @Value(value="${local.server.port}")
