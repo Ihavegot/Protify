@@ -22,17 +22,14 @@ public class HomeController {
  
 
 
-
     @GetMapping("/")
-    public RepresentationModel<?> homeEndpoint(){
-
+    public RepresentationModel<?> homeEndpoint() {
 
 
         return RepresentationModel.of(null,
 
 
-List.of(
-
+                List.of(
 
         linkTo(methodOn(SongsController.class)
                 .getSongs(null, null, null, null))
@@ -44,6 +41,7 @@ List.of(
 )
 
 
-                );
+
+        );
     }
 }

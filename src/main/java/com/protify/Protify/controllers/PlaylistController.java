@@ -17,6 +17,8 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.ExposesResourceFor;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -56,5 +58,21 @@ public class PlaylistController {
                                                            @RequestParam(required = false)        String[] sort){
         Page<Songs> songsPage = songService.getSongsByPlaylist(id,page);
         return songsPagedResourcesAssembler.toModel(songsPage, songsModelAssembler);
+    }
+
+    @PostMapping
+    public Playlist addSinglePlaylist(@RequestBody Playlist playlist){
+        return playlistService.addSinglePlaylist(playlist);
+    }
+
+    @PutMapping
+    public ResponseEntity<Playlist> updateSinglePlaylist(@RequestBody Playlist playlist){
+        return ResponseEntity.of(playlistService.updateSinglePlaylist(playlist));
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Playlist>  deleteSinglePlaylist(@PathVariable("id") Long id){
+        playlistService.deleteSinglePlaylist(id);
+        return ResponseEntity.ok(null);
     }
 }
