@@ -102,7 +102,7 @@ var response = traverson.follow(Hop.rel("playlists")
 
         //        and _embedded.user
 
-        User author = new ObjectMapper().convertValue(response.toObject("$._embedded.playlists[3]._embedded.user"), User.class);
+        User author = new ObjectMapper().convertValue(response.toObject("$._embedded.playlistList[3]._embedded.user"), User.class);
         softly.assertThat(author.getId()).isEqualTo(entities.get(23).getUser().getId());
         softly.assertThat(author.getPassword()).isNull();
         softly.assertThat(author.getEmail()).isEqualTo(entities.get(23).getUser().getEmail());
@@ -118,7 +118,7 @@ var response = traverson.follow(Hop.rel("playlists")
                 Playlist.builder().user(User.builder().email("email-"+i).login("login-"+i).password("password-"+i).build()).build()).toList());
 
         //        when
-        Traverson.TraversalBuilder response = traverson.follow("playlists", "$._embedded.playlists[5]._links.self.href", "self");
+        Traverson.TraversalBuilder response = traverson.follow("playlists", "$._embedded.playlistList[5]._links.self.href", "self");
 //        then
 
         EntityModel<Playlist> entity =
@@ -159,7 +159,7 @@ var response = traverson.follow(Hop.rel("playlists")
                 Playlist.builder().songs(new HashSet<>(songs.subList(0, i))).build()).toList());
 
         //        when
-        Traverson.TraversalBuilder response = traverson.follow("playlists", "next", "$._embedded.playlists[10]._links.self.href")
+        Traverson.TraversalBuilder response = traverson.follow("playlists", "next", "$._embedded.playlistList[10]._links.self.href")
                 .follow(Hop.rel("songs").withParameter("page", 1).withParameter("sort", "id"))
                 .follow("first", "next", "prev", "last", "self");
 //        then
@@ -177,7 +177,7 @@ var response = traverson.follow(Hop.rel("playlists")
         softly.assertThat( page.getContent().stream().toList().get(3).getContent().getTitle()).isEqualTo(songs.get(23).getTitle());
         //        and _embedded.artist
 
-        Artist artist = new ObjectMapper().convertValue(response.toObject("$._embedded.songs[3]._embedded.artist"), Artist.class);
+        Artist artist = new ObjectMapper().convertValue(response.toObject("$._embedded.songsList[3]._embedded.artist"), Artist.class);
         softly.assertThat(artist.getId()).isEqualTo(songs.get(23).getArtist().getId());
         softly.assertThat(artist.getArtistName()).isEqualTo(songs.get(23).getArtist().getArtistName());
         softly.assertThat(artist.getName()).isEqualTo(songs.get(23).getArtist().getName());

@@ -109,7 +109,7 @@ class SongTest {
 
      //        and _embedded.artist
 
-     Artist artist = new ObjectMapper().convertValue(response.toObject("$._embedded.songs[3]._embedded.artist"), Artist.class);
+     Artist artist = new ObjectMapper().convertValue(response.toObject("$._embedded.songsList[3]._embedded.artist"), Artist.class);
      softly.assertThat(artist.getId()).isEqualTo(entities.get(23).getArtist().getId());
      softly.assertThat(artist.getArtistName()).isEqualTo(entities.get(23).getArtist().getArtistName());
      softly.assertThat(artist.getName()).isEqualTo(entities.get(23).getArtist().getName());
@@ -128,7 +128,7 @@ class SongTest {
                 Songs.builder().title("Title " +i).build()).toList());
 
 //    when
-var        response = traverson.follow("songs", "$._embedded.songs[5]._links.self.href", "self");
+var        response = traverson.follow("songs", "$._embedded.songsList[5]._links.self.href", "self");
         //    then
         EntityModel<Songs> song =
                 response.toObject(new ParameterizedTypeReference<EntityModel<Songs>>() {

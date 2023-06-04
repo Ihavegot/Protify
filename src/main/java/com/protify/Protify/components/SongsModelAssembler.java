@@ -34,7 +34,7 @@ public class SongsModelAssembler implements RepresentationModelAssembler<Songs, 
 
 
         HalModelBuilder builder = HalModelBuilder.halModelOf(entity)
-                .link(linkTo(methodOn(SongsController.class).getSingleSong(null)).withSelfRel())
+                .link(linkTo(methodOn(SongsController.class).getSingleSong(entity)).withSelfRel())
          ;
 
 
