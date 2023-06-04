@@ -4,6 +4,8 @@ import com.protify.Protify.models.User;
 import com.protify.Protify.repository.UserRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +28,10 @@ public class UserService {
 
     public <S extends User> S save(S entity) {
         return userRepository.save(entity);
+    }
+
+    public Page<User> findAll(Pageable pageable) {
+        return  userRepository.findAll(pageable);
     }
 }
 
