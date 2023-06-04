@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@ExposesResourceFor(Playlist.class)
 @RequestMapping("/playlists")
 @RequiredArgsConstructor
 public class PlaylistController {

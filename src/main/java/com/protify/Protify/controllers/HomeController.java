@@ -19,9 +19,9 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class HomeController {
-    private final EntityLinks links;
+ 
 
-    private  final LinkRelationProvider linkRelationProvider;
+
 
     @GetMapping("/")
     public RepresentationModel<?> homeEndpoint(){
@@ -36,11 +36,11 @@ List.of(
 
         linkTo(methodOn(SongsController.class)
                 .getSongs(null, null, null, null))
-                .withRel(        linkRelationProvider.getCollectionResourceRelFor(Songs.class)),
+                .withRel(        "songs"),
 
         linkTo(methodOn(PlaylistController.class)
                 .getPlaylist(null, null, null, null))
-                .withRel(        linkRelationProvider.getCollectionResourceRelFor(Playlist.class))
+                .withRel(        "playlists")
 )
 
 

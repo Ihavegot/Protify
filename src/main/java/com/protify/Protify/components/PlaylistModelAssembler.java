@@ -24,10 +24,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequiredArgsConstructor
 public class PlaylistModelAssembler implements RepresentationModelAssembler<Playlist, EntityModel<Playlist>> {
 
-    private final EntityLinks links;
-
-    private  final LinkRelationProvider linkRelationProvider;
-
 
 
     @Override
@@ -35,9 +31,13 @@ public class PlaylistModelAssembler implements RepresentationModelAssembler<Play
 
 
         HalModelBuilder builder = HalModelBuilder.halModelOf(entity)
-                .link(links.linkToItemResource(entity, Playlist::getId))
+
+                .link(
+                        linkTo(methodOn(PlaylistController.class).getSinglePlaylist(entity)).withSelfRel()
+
+                )
                 .link(linkTo(methodOn(PlaylistController.class).getPlaylistSongs(entity.getId(),null, null, null, null)).withRel(
-                        linkRelationProvider.getCollectionResourceRelFor(Songs.class)
+                        "songs"
                 ));
 
 

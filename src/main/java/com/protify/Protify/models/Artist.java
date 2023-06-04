@@ -12,7 +12,6 @@ import java.util.Set;
 @Entity
 @Setter
 @Getter
-@Relation(collectionRelation = "artists", itemRelation = "artist")
 public class Artist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

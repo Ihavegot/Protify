@@ -14,7 +14,6 @@ import java.util.Set;
 @Getter
 @Builder
 @AllArgsConstructor
-@Relation(collectionRelation = "songs", itemRelation = "song")
 public class Songs {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -13,7 +13,6 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Relation(collectionRelation = "users", itemRelation = "user")
 public class User{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
