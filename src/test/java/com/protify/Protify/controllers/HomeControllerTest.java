@@ -63,7 +63,7 @@ class HomeControllerTest {
 
 
         softly.assertThat(page.getMetadata().getNumber()).isEqualTo(1);
-        softly.assertThat(page.getMetadata().getSize()).isEqualTo(20);
+        softly.assertThat(page.getMetadata().getSize()).isEqualTo(30);
     }
 
 
