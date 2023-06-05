@@ -174,11 +174,11 @@ class UserControllerTest {
 
 
         //when
-        var request = traverson.follow("users", "$._templates.default.target");
+        var request = traverson.follow("users");
         //then
         softly.assertThat(request.<String>toObject("$._templates.default.method")).isEqualTo("POST");
 
-        EntityModel<User> result = request
+        EntityModel<User> result = request.follow("$._templates.default.target")
                 .post(expected, new ParameterizedTypeReference<>() {
         });
 
