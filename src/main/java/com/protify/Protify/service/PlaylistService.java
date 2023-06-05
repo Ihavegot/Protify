@@ -44,4 +44,8 @@ public class PlaylistService {
     public void deleteSinglePlaylist(long id){
         playlistRepository.deleteById(id);
     }
+
+    public Page<Playlist> findAllByUserId(Long id, Pageable pageable) {
+        return  playlistRepository.findAllByUserId(id, pageable);
     }
+}

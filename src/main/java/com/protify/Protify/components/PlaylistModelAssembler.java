@@ -47,10 +47,10 @@ public class PlaylistModelAssembler implements RepresentationModelAssembler<Play
 
         if (entity.getUser() != null) {
             builder = builder
-                    //            TODO: replace `embed` with `preview`
-                    .embed(entity.getUser())
 
-//                    .forLink( links.linkToItemResource(entity.getUser(), User::getId) .withRel( linkRelationProvider.getItemResourceRelFor(User.class)))
+                    .preview(entity.getUser())
+
+       .forLink( links.linkToItemResource(entity.getUser(), User::getId) .withRel( linkRelationProvider.getItemResourceRelFor(User.class)))
             ;
         }
 

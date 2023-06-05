@@ -8,40 +8,57 @@ import com.protify.Protify.models.Songs;
 import com.protify.Protify.service.ArtistService;
 import com.protify.Protify.service.SongService;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/artist")
 public class ArtistController {
     private final ArtistService artistService;
-    private final ArtistModelAssembler playlistModelAssembler;
+    private final ArtistModelAssembler artistModelAssembler;
     private final PagedResourcesAssembler<Artist> pagedResourcesAssembler;
     private final PagedResourcesAssembler<Songs> songsPagedResourcesAssembler;
     private final SongService songService;
     private final SongsModelAssembler songsModelAssembler;
 
-    @GetMapping("/artist")
-    public PagedModel<EntityModel<Artist>> getArtist(Pageable page){
+    @GetMapping
+    public PagedModel<EntityModel<Artist>> getArtist(@ParameterObject Pageable page){
         Page<Artist> artistPage = artistService.getArtist(page);
-        return pagedResourcesAssembler.toModel(artistPage, playlistModelAssembler);
+        return pagedResourcesAssembler.toModel(artistPage, artistModelAssembler);
     }
 
-    @GetMapping("/artist/{id}")
+    @GetMapping("{id}")
     public EntityModel<Artist> getSingleArtist(@PathVariable("id") Artist artist){
-        return playlistModelAssembler.toModel(artist);
+        return artistModelAssembler.toModel(artist);
     }
 
-    @GetMapping("/artist/{id}/songs")
-    public PagedModel<EntityModel<Songs>> getSongsByArtist(@PathVariable("id") Long id, Pageable page){
+    @GetMapping("{id}/songs")
+    public PagedModel<EntityModel<Songs>> getSongsByArtist(@PathVariable("id") Long id,@ParameterObject Pageable page){
         Page<Songs> songsPage = songService.getSongsByArtist(id, page);
         return songsPagedResourcesAssembler.toModel(songsPage, songsModelAssembler);
+    }
+
+    @PostMapping
+    public Artist addSingleArtist(@RequestBody Artist artist){
+        return artistService.addSingleArtist(artist);
+    }
+
+    @PutMapping
+    public ResponseEntity<Artist> updateSingleArtist(@RequestBody Artist artist){
+        return ResponseEntity.of(artistService.updateSingleArtist(artist));
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Artist>  deleteSingleArtist(@PathVariable("id") Long id){
+        artistService.deleteSingleArtist(id);
+        return ResponseEntity.ok(null);
     }
 }
