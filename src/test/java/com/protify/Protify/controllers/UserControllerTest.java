@@ -42,13 +42,10 @@ import java.util.stream.Stream;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ProtifyApplication.class)
 @ExtendWith(SoftAssertionsExtension.class)
-
-@AutoConfigureMockMvc
 class UserControllerTest {
 
     
-    @Autowired
-    private  MockMvc mvc;
+
     
     @Value(value="${local.server.port}")
     private int port;
