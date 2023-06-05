@@ -50,7 +50,7 @@ class HomeControllerTest {
     private SoftAssertions softly;
 
     @ParameterizedTest
-    @CsvSource({"songs","playlists"})
+    @CsvSource({"songs","playlists","users"})
     void links(String rel) throws Exception {
 
         PagedModel<Object> page = traverson.follow(Hop.rel(rel)
