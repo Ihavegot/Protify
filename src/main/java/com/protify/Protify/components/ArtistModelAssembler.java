@@ -17,7 +17,7 @@ public class ArtistModelAssembler implements RepresentationModelAssembler<Artist
     @Override
     public EntityModel<Artist> toModel(Artist entity) {
         return EntityModel.of(entity).add(
-                linkTo(methodOn(ArtistController.class).getSingleArtist(entity)).withSelfRel()
+                linkTo(methodOn(ArtistController.class).getSingleArtist(entity.getId())).withSelfRel()
                         .andAffordance(afford(methodOn(ArtistController.class).deleteSingleArtist(entity.getId())))
                         .andAffordance(afford(methodOn(ArtistController.class).updateSingleArtist(entity)))
                 ,

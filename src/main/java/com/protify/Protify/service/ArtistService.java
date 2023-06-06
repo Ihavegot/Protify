@@ -1,5 +1,6 @@
 package com.protify.Protify.service;
 
+import com.protify.Protify.Exceptions.ResourceNotFoundException;
 import com.protify.Protify.models.Artist;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
@@ -22,8 +23,8 @@ public class ArtistService {
         return artistRepository.findAll(page);
     }
 
-    public Optional<Artist> getSingleArtist(long id) {
-        return artistRepository.findById(id);
+    public Artist getSingleArtist(long id) {
+        return artistRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("No Artist with id" +id));
     }
 
     public Artist addSingleArtist(Artist artist) {
