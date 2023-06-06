@@ -8,6 +8,7 @@ import com.protify.Protify.dtos.UserDto;
 import com.protify.Protify.mappers.UserMapper;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.User;
+import com.protify.Protify.repository.UserRepository;
 import com.protify.Protify.service.PlaylistService;
 import com.protify.Protify.service.UserService;
 import jakarta.validation.Valid;
@@ -46,6 +47,8 @@ public class UserController {
     @NonNull
     private final PlaylistModelAssembler playlistModelAssembler;
 
+    private final UserRepository userRepository;
+
 
     @GetMapping
     public PagedModel<EntityModel<User>> getUser(@ParameterObject Pageable pageable, @RequestParam(required = false) Integer page,
@@ -66,13 +69,14 @@ public class UserController {
         User user = userService.save(Mappers.getMapper(UserMapper.class).create(data));
 
         return ResponseEntity.created(
-                linkTo(methodOn(UserController.class).getSingleUser(user)).toUri()
+                linkTo(methodOn(UserController.class).getSingleUser(user.getId())).toUri()
         ).body(Accept != null ? userModelAssembler.toModel(user) : null);
     }
 
 
     @GetMapping("{id}")
-    public EntityModel<User> getSingleUser(@PathVariable("id") User user) {
+    public EntityModel<User> getSingleUser(@PathVariable("id") Long id) {
+        User user = userService.getSingle(id);
         return userModelAssembler.toModel(user);
     }
 
@@ -86,12 +90,14 @@ public class UserController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<EntityModel<User>> deleteUser(@PathVariable("id") User user, @RequestHeader(required = false) String Accept) {
+    public ResponseEntity<EntityModel<User>> deleteUser(@PathVariable("id") Long id, @RequestHeader(required = false) String Accept) {
+        var user = userService.getSingle(id);
         userService.delete(user);
 
         if (Accept == null) {
             return ResponseEntity.noContent().build();
         }
+
 
         return ResponseEntity.ok(userModelAssembler.toModel(user));
     }
