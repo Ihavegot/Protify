@@ -99,7 +99,7 @@ userService.delete(user);
         }
 
 
-        return ResponseEntity.ok(null);
+return ResponseEntity.ok(user);
     }
 
     @PutMapping("{id}")
