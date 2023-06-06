@@ -3,6 +3,7 @@ package com.protify.Protify.controllers;
 import com.protify.Protify.components.PlaylistModelAssembler;
 import com.protify.Protify.components.SongsModelAssembler;
 import com.protify.Protify.dtos.PlaylistDto;
+import com.protify.Protify.dtos.PlaylistSongsDto;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.service.PlaylistService;
@@ -64,7 +65,7 @@ public class PlaylistController {
                                                            @RequestParam(required = false) String[] sort) {
         Page<Songs> songsPage = songService.getSongsByPlaylist(id, page);
         PagedModel<EntityModel<Songs>> songPage = songsPagedResourcesAssembler.toModel(songsPage, songsModelAssembler);
-        songPage.getContent().forEach((song) ->song.mapLink(IanaLinkRelations.SELF, link -> link.andAffordance(afford(methodOn(PlaylistController.class).deleteSongFromPlaylist(id, song.getContent().getId())))));
+        songPage.getContent().forEach((song) ->song.mapLink(IanaLinkRelations.SELF, link -> link.andAffordance(afford(methodOn(PlaylistController.class).deleteSongFromPlaylist(null)))));
         return songPage;
     }
 
@@ -78,9 +79,14 @@ public class PlaylistController {
         return ResponseEntity.of(playlistService.updateSinglePlaylist(playlist));
     }
 
-    @PatchMapping("{id}/songs/{songId}/delete")
-    public ResponseEntity<Playlist> deleteSongFromPlaylist(@PathVariable("id") Long id, @PathVariable("songId") Long songId) {
-        return ResponseEntity.of(playlistService.deleteSongFromPlaylist(id, songId));
+    @DeleteMapping("/songs/delete")
+    public ResponseEntity<Playlist> deleteSongFromPlaylist(@RequestBody PlaylistSongsDto playlist) {
+        return ResponseEntity.of(playlistService.deleteSongFromPlaylist(playlist));
+    }
+
+    @PostMapping("/songs/add")
+    public ResponseEntity<Playlist> addSongToPlaylist(@RequestBody PlaylistSongsDto playlist) {
+        return ResponseEntity.of(playlistService.addSongToPlaylist(playlist));
     }
 
     @DeleteMapping("{id}")
