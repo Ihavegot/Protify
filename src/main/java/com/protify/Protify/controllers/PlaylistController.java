@@ -73,9 +73,9 @@ public class PlaylistController {
         return playlistService.addSinglePlaylist(playlist);
     }
 
-    @PutMapping
-    public ResponseEntity<Playlist> updateSinglePlaylist(@RequestBody Playlist playlist) {
-        return ResponseEntity.of(playlistService.updateSinglePlaylist(playlist));
+    @PatchMapping("{id}/{title}")
+    public ResponseEntity<Playlist> updateSinglePlaylist(@PathVariable("id") Long id,@PathVariable("title") String title) {
+        return ResponseEntity.of(playlistService.updateSinglePlaylist(id, title));
     }
 
     @PatchMapping("{id}/songs/{songId}/delete")
