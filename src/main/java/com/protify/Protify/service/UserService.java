@@ -1,5 +1,6 @@
 package com.protify.Protify.service;
 
+import com.protify.Protify.Exceptions.ResourceNotFoundException;
 import com.protify.Protify.models.User;
 import com.protify.Protify.repository.UserRepository;
 import lombok.NonNull;
@@ -39,8 +40,12 @@ public class UserService {
     }
 
 
-    public void delete(User user) {
-        userRepository.delete(user);
+    public void delete(Long id) {
+        userRepository.delete(userRepository.getReferenceById(id));
+    }
+
+    public User getSingle(Long id){
+        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No user with id " + id));
     }
 }
 
