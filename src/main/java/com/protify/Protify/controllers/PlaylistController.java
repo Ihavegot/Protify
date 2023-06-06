@@ -29,7 +29,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @ExposesResourceFor(Playlist.class)
-@RequestMapping("/playlists")
+@RequestMapping(value ="/playlists", produces = {MediaTypes.HAL_JSON_VALUE, MediaTypes.HAL_FORMS_JSON_VALUE})
 @RequiredArgsConstructor
 public class PlaylistController {
     private final PlaylistService playlistService;
