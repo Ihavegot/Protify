@@ -8,6 +8,7 @@ import org.assertj.core.api.SoftAssertions;
 
 public class ModelValidators {
 
+
     public static void validateArtist(SoftAssertions softly, Artist actual, Artist expected){
         softly.assertThat(actual.getId()).isEqualTo(expected.getId());
         softly.assertThat(actual.getArtistName()).isEqualTo(expected.getArtistName());
@@ -24,6 +25,8 @@ public class ModelValidators {
         softly.assertThat(actual.getSongFile()).isNull();
     }
 
+
+  
     public static void validateUser(SoftAssertions softly, User actual, User expected) {
         softly.assertThat(actual.getId()).isEqualTo(expected.getId());
         softly.assertThat(actual.getEmail()).isEqualTo(expected.getEmail());
@@ -32,7 +35,11 @@ public class ModelValidators {
         softly.assertThat(actual.getPlaylists()).isNull();
     }
 
+
     public static void validatePlaylist(SoftAssertions softly, Playlist actual, Playlist expected) {
         softly.assertThat(actual.getId()).isEqualTo(expected.getId());
+        softly.assertThat(actual.getUser()).isNull();
+        softly.assertThat(actual.getSongs()).isNull();
+
     }
 }

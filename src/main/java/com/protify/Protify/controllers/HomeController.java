@@ -5,9 +5,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
+import com.protify.Protify.models.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.server.LinkRelationProvider;
@@ -21,29 +20,33 @@ import java.util.List;
 public class HomeController {
     private final EntityLinks links;
 
-    private  final LinkRelationProvider linkRelationProvider;
+    private final LinkRelationProvider linkRelationProvider;
 
     @GetMapping("/")
-    public RepresentationModel<?> homeEndpoint(){
-
+    public RepresentationModel<?> homeEndpoint() {
 
 
         return RepresentationModel.of(null,
 
 
-List.of(
+                List.of(
 
 
-        linkTo(methodOn(SongsController.class)
-                .getSongs(null, null, null, null))
-                .withRel(        linkRelationProvider.getCollectionResourceRelFor(Songs.class)),
+                        linkTo(methodOn(SongsController.class)
+                                .getSongs(null, null, null, null))
+                                .withRel(linkRelationProvider.getCollectionResourceRelFor(Songs.class)),
 
-        linkTo(methodOn(PlaylistController.class)
-                .getPlaylist(null, null, null, null))
-                .withRel(        linkRelationProvider.getCollectionResourceRelFor(Playlist.class))
-)
+                        linkTo(methodOn(PlaylistController.class)
+                                .getPlaylist(null, null, null, null))
+                                .withRel(linkRelationProvider.getCollectionResourceRelFor(Playlist.class))
+                        ,
+
+                        linkTo(methodOn(UserController.class)
+                                .getUser(null, null, null, null))
+                                .withRel(linkRelationProvider.getCollectionResourceRelFor(User.class))
+                )
 
 
-                );
+        );
     }
 }

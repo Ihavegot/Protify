@@ -13,6 +13,8 @@ import com.protify.Protify.models.Songs;
 import com.protify.Protify.models.User;
 import com.protify.Protify.repository.PlaylistRepository;
 import com.protify.Protify.repository.SongRepository;
+import com.protify.Protify.repository.UserRepository;
+import com.protify.Protify.service.UserService;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -48,11 +50,14 @@ class PlaylistTest {
     @Value(value="${local.server.port}")
     private int port;
     private Traverson traverson;
+    @Autowired
+    private UserService userService;
 
     @BeforeEach
     public void beforeEach(){
         playlistRepository.deleteAll();
-songsRepository.deleteAll();
+        userService.deleteAll();
+        songsRepository.deleteAll();
         traverson = new Traverson(URI.create("http://localhost:"+port+"/"), MediaTypes.HAL_JSON);
 
     }
@@ -78,7 +83,9 @@ songsRepository.deleteAll();
     public void all() throws Exception {
 //given
         var entities = playlistRepository.saveAll(IntStream.range(0, 50).mapToObj((i)->
-                Playlist.builder().user( User.builder().login("login-"+i).password("password-"+i).email("email-"+i).build()).build()).toList());
+                Playlist.builder().user(
+                        userService.save(User.builder().login("login-"+i).password("password-"+i).email("email-"+i).build())
+                ).build()).toList());
 
 //when
 var response = traverson.follow(Hop.rel("playlists")
@@ -112,7 +119,7 @@ var response = traverson.follow(Hop.rel("playlists")
 //        given
 
         var entities = playlistRepository.saveAll(IntStream.range(0, 50).mapToObj((i)->
-                Playlist.builder().user(User.builder().email("email-"+i).login("login-"+i).password("password-"+i).build()).build()).toList());
+                Playlist.builder().user(userService.save(User.builder().email("email-"+i).login("login-"+i).password("password-"+i).build())).build()).toList());
 
         //        when
         Traverson.TraversalBuilder response = traverson.follow("playlists", "$._embedded.playlists[5]._links.self.href", "self");
@@ -137,6 +144,8 @@ var response = traverson.follow(Hop.rel("playlists")
 
     @Autowired
     private SongRepository songsRepository;
+    @Autowired
+    private UserRepository userRepository;
 
 
     @Test

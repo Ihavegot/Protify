@@ -24,4 +24,28 @@ public class PlaylistService {
     public Optional<Playlist> getSinglePlaylist(long id){
         return playlistRepository.findById(id);
     }
+
+    public Playlist addSinglePlaylist(Playlist playlist){
+        return playlistRepository.save(playlist);
     }
+
+    public Optional<Playlist> updateSinglePlaylist(Playlist playlist){
+        return playlistRepository.findById(playlist.getId()).map(b -> {
+            if (playlist.getUser() != null) {
+                b.setUser(playlist.getUser());
+            }
+            if(playlist.getSongs() != null){
+                b.setSongs(playlist.getSongs());
+            }
+            return playlistRepository.save(b);
+        });
+    }
+
+    public void deleteSinglePlaylist(long id){
+        playlistRepository.deleteById(id);
+    }
+
+    public Page<Playlist> findAllByUserId(Long id, Pageable pageable) {
+        return  playlistRepository.findAllByUserId(id, pageable);
+    }
+}
