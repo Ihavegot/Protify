@@ -17,7 +17,7 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-@NonNull
+    @NonNull
     private final UserRepository userRepository;
 
 
@@ -35,11 +35,8 @@ public class UserService {
     }
 
     public Page<User> findAll(Pageable pageable) {
-        return  userRepository.findAll(pageable);
+        return userRepository.findAll(pageable);
     }
-
-
-
 
 
     public void delete(User user) {

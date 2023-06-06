@@ -19,34 +19,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HomeController {
     private final EntityLinks links;
-
     private final LinkRelationProvider linkRelationProvider;
-
     @GetMapping("/")
     public RepresentationModel<?> homeEndpoint() {
-
-
         return RepresentationModel.of(null,
-
-
                 List.of(
-
-
                         linkTo(methodOn(SongsController.class)
                                 .getSongs(null, null, null, null))
                                 .withRel(linkRelationProvider.getCollectionResourceRelFor(Songs.class)),
-
                         linkTo(methodOn(PlaylistController.class)
                                 .getPlaylist(null, null, null, null))
                                 .withRel(linkRelationProvider.getCollectionResourceRelFor(Playlist.class))
                         ,
-
                         linkTo(methodOn(UserController.class)
                                 .getUser(null, null, null, null))
                                 .withRel(linkRelationProvider.getCollectionResourceRelFor(User.class))
                 )
-
-
         );
     }
 }
