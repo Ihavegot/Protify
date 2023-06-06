@@ -105,7 +105,8 @@ class SongTest {
 //    given
 
         var entities = songRepository.saveAll(IntStream.range(0, 25).mapToObj((i) ->
-                Songs.builder().artist(null).title("Title " + i).build()).toList());
+Songs.builder().artist(artistRepository.save(new Artist())).title("Title " +i).build()).toList());
+
 
         songRepository.saveAll(IntStream.range(25, 50).mapToObj((i) ->
                 Songs.builder().title("Title " + i).build()).toList());
