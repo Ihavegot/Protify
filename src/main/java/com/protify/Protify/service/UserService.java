@@ -39,9 +39,8 @@ public class UserService {
         return userRepository.findAll(pageable);
     }
 
-
-    public void delete(Long id) {
-userRepository.delete(user);
+    public void delete(User user) {
+        userRepository.delete(user);
     }
 
     public User getSingle(Long id){

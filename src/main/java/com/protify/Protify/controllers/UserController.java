@@ -91,15 +91,15 @@ public class UserController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<EntityModel<User>> deleteUser(@PathVariable("id") Long id, @RequestHeader(required = false) String Accept) {
-var user = userService.findById(id);
-userService.delete(user);
+        var user = userService.getSingle(id);
+        userService.delete(user);
 
         if (Accept == null) {
             return ResponseEntity.noContent().build();
         }
 
 
-return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userModelAssembler.toModel(user));
     }
 
     @PutMapping("{id}")
