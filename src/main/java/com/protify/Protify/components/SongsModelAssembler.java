@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @Component
 @RequiredArgsConstructor
@@ -27,8 +28,16 @@ public class SongsModelAssembler implements RepresentationModelAssembler<Songs, 
 
     @Override
     public EntityModel<Songs> toModel(Songs entity) {
-        HalModelBuilder builder = HalModelBuilder.halModelOf(entity)
-                .link(links.linkToItemResource(entity, Songs::getId));
+        HalModelBuilder builder = null;
+        try {
+            builder = HalModelBuilder.halModelOf(entity)
+                    .link(links.linkToItemResource(entity, Songs::getId)
+                            .andAffordance(afford(methodOn(SongsController.class).deleteSong(entity.getId())))
+                            .andAffordance(afford(methodOn(SongsController.class).putSong(entity.getId(), null))
+                    ));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         if (entity.getArtist() != null) {
             builder = builder
 // TODO: replace `embed` with `preview`

@@ -33,7 +33,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SongsController {
     private final SongService songService;
-    private final SongRepository songRepository;
     private final SongsModelAssembler songsModelAssembler;
     private final PagedResourcesAssembler<Songs> pagedResourcesAssembler;
 

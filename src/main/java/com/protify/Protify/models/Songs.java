@@ -22,9 +22,7 @@ public class Songs {
     private String title;
     @ManyToOne
     @JoinColumn(name = "artist")
-    @JsonIgnore
     private Artist artist;
-    @JsonIgnore
     private Blob songFile;
 
     @ManyToMany(mappedBy = "songs", cascade = CascadeType.REMOVE)
