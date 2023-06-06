@@ -17,35 +17,36 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PlaylistService {
     private final PlaylistRepository playlistRepository;
-    public Page<Playlist> getPlaylist(Pageable page){
+
+    public Page<Playlist> getPlaylist(Pageable page) {
         return playlistRepository.findAll(page);
     }
 
-    public Optional<Playlist> getSinglePlaylist(long id){
+    public Optional<Playlist> getSinglePlaylist(long id) {
         return playlistRepository.findById(id);
     }
 
-    public Playlist addSinglePlaylist(Playlist playlist){
+    public Playlist addSinglePlaylist(Playlist playlist) {
         return playlistRepository.save(playlist);
     }
 
-    public Optional<Playlist> updateSinglePlaylist(Playlist playlist){
+    public Optional<Playlist> updateSinglePlaylist(Playlist playlist) {
         return playlistRepository.findById(playlist.getId()).map(b -> {
             if (playlist.getUser() != null) {
                 b.setUser(playlist.getUser());
             }
-            if(playlist.getSongs() != null){
+            if (playlist.getSongs() != null) {
                 b.setSongs(playlist.getSongs());
             }
             return playlistRepository.save(b);
         });
     }
 
-    public void deleteSinglePlaylist(long id){
+    public void deleteSinglePlaylist(long id) {
         playlistRepository.deleteById(id);
     }
 
     public Page<Playlist> findAllByUserId(Long id, Pageable pageable) {
-        return  playlistRepository.findAllByUserId(id, pageable);
+        return playlistRepository.findAllByUserId(id, pageable);
     }
 }

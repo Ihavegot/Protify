@@ -18,34 +18,24 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class UserModelAssembler  implements RepresentationModelAssembler<User, EntityModel<User>> {
-@NonNull
-private final EntityLinks links;
-    @NonNull private  final LinkRelationProvider linkRelationProvider;
+public class UserModelAssembler implements RepresentationModelAssembler<User, EntityModel<User>> {
+    @NonNull
+    private final EntityLinks links;
+    @NonNull
+    private final LinkRelationProvider linkRelationProvider;
 
     @Override
     public EntityModel<User> toModel(User entity) {
-
-
-
-
-
-
         HalModelBuilder builder = HalModelBuilder.halModelOf(entity)
                 .link(links.linkToItemResource(entity, User::getId)
                         .andAffordance(afford(methodOn(UserController.class).deleteUser(entity, null)))
                         .andAffordance(afford(methodOn(UserController.class).patchUser(entity, null, null)))
                         .andAffordance(afford(methodOn(UserController.class).putUser(entity.getId(), null, null)))
                 )
-                .link(linkTo(methodOn(UserController.class).getPlaylists(entity.getId(),null,null,null,null)).withRel(
+                .link(linkTo(methodOn(UserController.class).getPlaylists(entity.getId(), null, null, null, null)).withRel(
                         linkRelationProvider.getCollectionResourceRelFor(Playlist.class)
-                ))
-                ;
-
-
-
-
-        return (EntityModel<User>)builder
+                ));
+        return (EntityModel<User>) builder
                 .build();
     }
 }

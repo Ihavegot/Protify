@@ -22,7 +22,6 @@ public class ArtistModelAssembler implements RepresentationModelAssembler<Artist
                         .andAffordance(afford(methodOn(ArtistController.class).updateSingleArtist(entity)))
                 ,
                 linkTo(methodOn(ArtistController.class).getSongsByArtist(entity.getId(), null)).withRel("songs")
-
         );
     }
 }

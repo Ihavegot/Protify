@@ -30,34 +30,34 @@ public class ArtistController {
     private final SongsModelAssembler songsModelAssembler;
 
     @GetMapping
-    public PagedModel<EntityModel<Artist>> getArtist(@ParameterObject Pageable page){
+    public PagedModel<EntityModel<Artist>> getArtists(@ParameterObject Pageable page) {
         Page<Artist> artistPage = artistService.getArtist(page);
         return pagedResourcesAssembler.toModel(artistPage, artistModelAssembler);
     }
 
     @GetMapping("{id}")
-    public EntityModel<Artist> getSingleArtist(@PathVariable("id") Artist artist){
+    public EntityModel<Artist> getSingleArtist(@PathVariable("id") Artist artist) {
         return artistModelAssembler.toModel(artist);
     }
 
     @GetMapping("{id}/songs")
-    public PagedModel<EntityModel<Songs>> getSongsByArtist(@PathVariable("id") Long id,@ParameterObject Pageable page){
+    public PagedModel<EntityModel<Songs>> getSongsByArtist(@PathVariable("id") Long id, @ParameterObject Pageable page) {
         Page<Songs> songsPage = songService.getSongsByArtist(id, page);
         return songsPagedResourcesAssembler.toModel(songsPage, songsModelAssembler);
     }
 
     @PostMapping
-    public Artist addSingleArtist(@RequestBody Artist artist){
+    public Artist addSingleArtist(@RequestBody Artist artist) {
         return artistService.addSingleArtist(artist);
     }
 
     @PutMapping
-    public ResponseEntity<Artist> updateSingleArtist(@RequestBody Artist artist){
+    public ResponseEntity<Artist> updateSingleArtist(@RequestBody Artist artist) {
         return ResponseEntity.of(artistService.updateSingleArtist(artist));
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Artist>  deleteSingleArtist(@PathVariable("id") Long id){
+    public ResponseEntity<Artist> deleteSingleArtist(@PathVariable("id") Long id) {
         artistService.deleteSingleArtist(id);
         return ResponseEntity.ok(null);
     }

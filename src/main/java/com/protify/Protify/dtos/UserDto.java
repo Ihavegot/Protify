@@ -13,30 +13,26 @@ import org.springframework.hateoas.InputType;
 
 @Setter
 @Getter
-
 @NoArgsConstructor
 public class UserDto {
 
-    private        String email;
-
-
-    private        String login;
-
+    private String email;
+    private String login;
     @InputType("password")
-    private        String password;
-
+    private String password;
     @AssertTrue
     public boolean isEmailValid() {
-        return  email == null || !email.isBlank();
+        return email == null || !email.isBlank();
     }
+
     @AssertTrue
     public boolean isLoginValid() {
-        return  login == null || !login.isBlank();
+        return login == null || !login.isBlank();
     }
 
     @AssertTrue
     public boolean isPasswordValid() {
-        return  password == null || !password.isBlank();
+        return password == null || !password.isBlank();
     }
 }
 

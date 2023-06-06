@@ -33,34 +33,33 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     @NonNull
-    private  final UserService userService;
+    private final UserService userService;
 
     @NonNull
-private  final     PagedResourcesAssembler<User> pagedUserAssembler;
+    private final PagedResourcesAssembler<User> pagedUserAssembler;
 
     @NonNull
-    private  final     PagedResourcesAssembler<Playlist> pagedPlaylistAssembler;
+    private final PagedResourcesAssembler<Playlist> pagedPlaylistAssembler;
     @NonNull
-    private  final UserModelAssembler userModelAssembler; @NonNull
+    private final UserModelAssembler userModelAssembler;
+    @NonNull
     private final PlaylistService playlistService;
     @NonNull
     private final PlaylistModelAssembler playlistModelAssembler;
 
 
-
     @GetMapping
-
     public PagedModel<EntityModel<User>> getUser(@ParameterObject Pageable pageable, @RequestParam(required = false) Integer page,
-                                                 @RequestParam(required = false)         Integer size,
-                                                 @RequestParam(required = false)        String[] sort){
+                                                 @RequestParam(required = false) Integer size,
+                                                 @RequestParam(required = false) String[] sort) {
         Page<User> users = userService.findAll(pageable);
         PagedModel<EntityModel<User>> model = pagedUserAssembler.toModel(users, userModelAssembler);
 
-       model.mapLink(IanaLinkRelations.SELF, link->
-               link.andAffordance(afford(methodOn(UserController.class).postUser(null, null)))
-               );
+        model.mapLink(IanaLinkRelations.SELF, link ->
+                link.andAffordance(afford(methodOn(UserController.class).postUser(null, null)))
+        );
 
-    return  model;
+        return model;
     }
 
     @PostMapping
@@ -69,35 +68,33 @@ private  final     PagedResourcesAssembler<User> pagedUserAssembler;
 
         return ResponseEntity.created(
                 linkTo(methodOn(UserController.class).getSingleUser(user)).toUri()
-        ).body(Accept != null ?  userModelAssembler.toModel(user) : null);
+        ).body(Accept != null ? userModelAssembler.toModel(user) : null);
     }
 
 
-
     @GetMapping("{id}")
-    public EntityModel<User> getSingleUser(@PathVariable("id") User user){
+    public EntityModel<User> getSingleUser(@PathVariable("id") User user) {
         return userModelAssembler.toModel(user);
     }
 
 
     @GetMapping("{id}/playlists")
-
     public PagedModel<EntityModel<Playlist>> getPlaylists(@PathVariable Long id, @ParameterObject Pageable pageable, @RequestParam(required = false) Integer page,
-                                                          @RequestParam(required = false)         Integer size,
-                                                          @RequestParam(required = false)        String[] sort){
+                                                          @RequestParam(required = false) Integer size,
+                                                          @RequestParam(required = false) String[] sort) {
         Page<Playlist> playlists = playlistService.findAllByUserId(id, pageable);
         return pagedPlaylistAssembler.toModel(playlists, playlistModelAssembler);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<EntityModel<User>> deleteUser( @PathVariable("id") User user, @RequestHeader(required = false) String Accept) {
+    public ResponseEntity<EntityModel<User>> deleteUser(@PathVariable("id") User user, @RequestHeader(required = false) String Accept) {
         userService.delete(user);
 
-        if(Accept == null){
-            return  ResponseEntity.noContent().build();
+        if (Accept == null) {
+            return ResponseEntity.noContent().build();
         }
 
-        return  ResponseEntity.ok(userModelAssembler.toModel(user));
+        return ResponseEntity.ok(userModelAssembler.toModel(user));
     }
 
     @PutMapping("{id}")
@@ -107,11 +104,11 @@ private  final     PagedResourcesAssembler<User> pagedUserAssembler;
         user.setId(id);
         user = userService.save(user);
 
-        if(Accept == null){
-          return  ResponseEntity.noContent().build();
+        if (Accept == null) {
+            return ResponseEntity.noContent().build();
         }
 
-        return  ResponseEntity.ok(userModelAssembler.toModel(user));
+        return ResponseEntity.ok(userModelAssembler.toModel(user));
     }
 
     @PatchMapping("{id}")
@@ -120,12 +117,12 @@ private  final     PagedResourcesAssembler<User> pagedUserAssembler;
 
         Mappers.getMapper(UserMapper.class).update(user, body);
 
-         user = userService.save(user);
+        user = userService.save(user);
 
-        if(Accept == null){
-           return ResponseEntity.noContent().build();
+        if (Accept == null) {
+            return ResponseEntity.noContent().build();
         }
 
-        return  ResponseEntity.ok(userModelAssembler.toModel(user));
+        return ResponseEntity.ok(userModelAssembler.toModel(user));
     }
 }

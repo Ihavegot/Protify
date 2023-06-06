@@ -24,7 +24,8 @@ public class Playlist {
     private long id;
     @ManyToOne
     @JoinColumn(name = "user_id")
-  @JsonIgnore  private User user;
+    @JsonIgnore
+    private User user;
     @ManyToMany
     @JsonIgnore
     private Set<Songs> songs;

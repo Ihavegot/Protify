@@ -35,44 +35,41 @@ public class PlaylistController {
     private final SongService songService;
     private final SongsModelAssembler songsModelAssembler;
 
-
-
-
     @GetMapping
     public PagedModel<EntityModel<Playlist>> getPlaylist(@ParameterObject Pageable page, @RequestParam(required = false, name = "page") Integer p,
-                                                         @RequestParam(required = false)         Integer size,
-                                                         @RequestParam(required = false)        String[] sort
-    ){
+                                                         @RequestParam(required = false) Integer size,
+                                                         @RequestParam(required = false) String[] sort
+    ) {
 
         Page<Playlist> playlistPage = playlistService.getPlaylist(page);
         return pagedResourcesAssembler.toModel(playlistPage, playlistModelAssembler);
     }
 
     @GetMapping("{id}")
-    public EntityModel<Playlist> getSinglePlaylist(@PathVariable("id") Playlist playlist){
+    public EntityModel<Playlist> getSinglePlaylist(@PathVariable("id") Playlist playlist) {
         return playlistModelAssembler.toModel(playlist);
     }
 
     @GetMapping("{id}/songs")
     public PagedModel<EntityModel<Songs>> getPlaylistSongs(@PathVariable("id") Long id, @ParameterObject Pageable page, @RequestParam(required = false, name = "page") Integer p,
-                                                           @RequestParam(required = false)         Integer size,
-                                                           @RequestParam(required = false)        String[] sort){
-        Page<Songs> songsPage = songService.getSongsByPlaylist(id,page);
+                                                           @RequestParam(required = false) Integer size,
+                                                           @RequestParam(required = false) String[] sort) {
+        Page<Songs> songsPage = songService.getSongsByPlaylist(id, page);
         return songsPagedResourcesAssembler.toModel(songsPage, songsModelAssembler);
     }
 
     @PostMapping
-    public Playlist addSinglePlaylist(@RequestBody Playlist playlist){
+    public Playlist addSinglePlaylist(@RequestBody Playlist playlist) {
         return playlistService.addSinglePlaylist(playlist);
     }
 
     @PutMapping
-    public ResponseEntity<Playlist> updateSinglePlaylist(@RequestBody Playlist playlist){
+    public ResponseEntity<Playlist> updateSinglePlaylist(@RequestBody Playlist playlist) {
         return ResponseEntity.of(playlistService.updateSinglePlaylist(playlist));
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Playlist>  deleteSinglePlaylist(@PathVariable("id") Long id){
+    public ResponseEntity<Playlist> deleteSinglePlaylist(@PathVariable("id") Long id) {
         playlistService.deleteSinglePlaylist(id);
         return ResponseEntity.ok(null);
     }
