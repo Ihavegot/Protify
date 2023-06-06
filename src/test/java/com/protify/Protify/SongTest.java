@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.protify.Protify.models.Artist;
 import com.protify.Protify.models.Songs;
+import com.protify.Protify.repository.ArtistRepository;
 import com.protify.Protify.repository.SongRepository;
 import org.aspectj.lang.annotation.After;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
@@ -39,64 +40,54 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
 import org.assertj.core.api.SoftAssertions;
 import org.springframework.core.ParameterizedTypeReference;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ProtifyApplication.class)
 @ExtendWith(SoftAssertionsExtension.class)
-
-
 class SongTest {
 
-    @Value(value="${local.server.port}")
+    @Value(value = "${local.server.port}")
     private int port;
     private Traverson traverson;
 
     @BeforeEach
-    public void beforeEach(){
+    public void beforeEach() {
 
         songRepository.deleteAll();
-
-        traverson = new Traverson(URI.create("http://localhost:"+port+"/"), MediaTypes.HAL_JSON);
+        artistRepository.deleteAll();
+        traverson = new Traverson(URI.create("http://localhost:" + port + "/"), MediaTypes.HAL_JSON);
 
     }
-
-
- @Autowired
-     private SongRepository songRepository;
-
-
-
-
-
-
-
+@Autowired
+private ArtistRepository artistRepository;
+@Autowired
+    private SongRepository songRepository;
 
 
     @InjectSoftAssertions
     private SoftAssertions softly;
 
 
-
- @Test
+    @Test
     public void all() throws Exception {
 //     given
-     var entities = songRepository.saveAll(IntStream.range(0, 25).mapToObj((i)->
-             Songs.builder().artist(new Artist()).title("Title " +i).build()).toList());
+        var entities = songRepository.saveAll(IntStream.range(0, 25).mapToObj((i) ->
+Songs.builder().artist(artistRepository.save(new Artist())).title("Title " +i).build()).toList());
 
-     songRepository.saveAll(IntStream.range(25, 50).mapToObj((i)->
-             Songs.builder().title("Title " +i).build()).toList());
+        songRepository.saveAll(IntStream.range(25, 50).mapToObj((i) ->
+                Songs.builder().title("Title " + i).build()).toList());
 
 
 //     when
-     var response = traverson.follow(Hop.rel("songs")
-             .withParameter("page", 1)
-             .withParameter("sort", "id")).follow("last", "prev", "first", "next", "self")
-             ;
+        var response = traverson.follow(Hop.rel("songs")
+                .withParameter("page", 1)
+                .withParameter("sort", "id")).follow("last", "prev", "first", "next", "self");
 //     then
-     var page = response
-             .toObject(new ParameterizedTypeReference<PagedModel<EntityModel<Songs>>>(){});
-
+        var page = response
+                .toObject(new ParameterizedTypeReference<PagedModel<EntityModel<Songs>>>() {
+                });
 
 
      softly.assertThat(page.getMetadata().getSize()).isEqualTo(20);
@@ -111,18 +102,20 @@ class SongTest {
  }
 
 
+
     @Test
     public void one() throws Exception {
 //    given
 
-        var entities = songRepository.saveAll(IntStream.range(0, 25).mapToObj((i)->
-                Songs.builder().artist(new Artist()).title("Title " +i).build()).toList());
+        var entities = songRepository.saveAll(IntStream.range(0, 25).mapToObj((i) ->
+Songs.builder().artist(artistRepository.save(new Artist())).title("Title " +i).build()).toList());
 
-        songRepository.saveAll(IntStream.range(25, 50).mapToObj((i)->
-                Songs.builder().title("Title " +i).build()).toList());
+
+        songRepository.saveAll(IntStream.range(25, 50).mapToObj((i) ->
+                Songs.builder().title("Title " + i).build()).toList());
 
 //    when
-var        response = traverson.follow("songs", "$._embedded.songs[5]._links.self.href", "self");
+        var response = traverson.follow("songs", "$._embedded.songs[5]._links.self.href", "self");
         //    then
         EntityModel<Songs> song =
                 response.toObject(new ParameterizedTypeReference<EntityModel<Songs>>() {
@@ -130,6 +123,7 @@ var        response = traverson.follow("songs", "$._embedded.songs[5]._links.sel
         ModelValidators.validateSongs(softly, song.getContent(), entities.get(5));
 
         //        and _embedded.artist
+
         Artist artist = new ObjectMapper().convertValue(response.toObject("$._embedded.artist"), Artist.class);
         ModelValidators.validateArtist(softly, artist, entities.get(5).getArtist());
     }

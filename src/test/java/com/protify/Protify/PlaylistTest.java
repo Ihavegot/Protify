@@ -11,6 +11,7 @@ import com.protify.Protify.models.Artist;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.models.User;
+import com.protify.Protify.repository.ArtistRepository;
 import com.protify.Protify.repository.PlaylistRepository;
 import com.protify.Protify.repository.SongRepository;
 import com.protify.Protify.repository.UserRepository;
@@ -45,20 +46,21 @@ import java.util.stream.Stream;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ProtifyApplication.class)
 @ExtendWith(SoftAssertionsExtension.class)
-
 class PlaylistTest {
-    @Value(value="${local.server.port}")
+    @Value(value = "${local.server.port}")
     private int port;
     private Traverson traverson;
     @Autowired
     private UserService userService;
 
     @BeforeEach
-    public void beforeEach(){
+    public void beforeEach() {
         playlistRepository.deleteAll();
         userService.deleteAll();
+
         songsRepository.deleteAll();
-        traverson = new Traverson(URI.create("http://localhost:"+port+"/"), MediaTypes.HAL_JSON);
+        artistRepository.deleteAll();
+        traverson = new Traverson(URI.create("http://localhost:" + port + "/"), MediaTypes.HAL_JSON);
 
     }
 
@@ -67,37 +69,29 @@ class PlaylistTest {
     private PlaylistRepository playlistRepository;
 
 
-
-
-
-
-
-
-
     @InjectSoftAssertions
     private SoftAssertions softly;
-
 
 
     @Test
     public void all() throws Exception {
 //given
-        var entities = playlistRepository.saveAll(IntStream.range(0, 50).mapToObj((i)->
+        var entities = playlistRepository.saveAll(IntStream.range(0, 50).mapToObj((i) ->
                 Playlist.builder().user(
-                        userService.save(User.builder().login("login-"+i).password("password-"+i).email("email-"+i).build())
+                        userService.save(User.builder().login("login-" + i).password("password-" + i).email("email-" + i).build())
                 ).build()).toList());
 
 //when
-var response = traverson.follow(Hop.rel("playlists")
-                .withParameter("page", 1)
-                .withParameter("sort", "id"))
-        .follow("last", "prev", "first", "next", "self");
+        var response = traverson.follow(Hop.rel("playlists")
+                        .withParameter("page", 1)
+                        .withParameter("sort", "id"))
+                .follow("last", "prev", "first", "next", "self");
 
 //then
 
         var page = response
-                .toObject(new ParameterizedTypeReference<PagedModel<EntityModel<Playlist>>>(){});
-
+                .toObject(new ParameterizedTypeReference<PagedModel<EntityModel<Playlist>>>() {
+                });
 
 
         softly.assertThat(page.getMetadata().getSize()).isEqualTo(20);
@@ -106,6 +100,7 @@ var response = traverson.follow(Hop.rel("playlists")
         softly.assertThat(page.getMetadata().getNumber()).isEqualTo(1);
         softly.assertThat(page.getContent()).hasSize(20);
         ModelValidators.validatePlaylist(softly, page.getContent().stream().toList().get(3).getContent(), entities.get(23));
+
 
         //        and _embedded.user
 
@@ -118,8 +113,8 @@ var response = traverson.follow(Hop.rel("playlists")
     public void one() throws Exception {
 //        given
 
-        var entities = playlistRepository.saveAll(IntStream.range(0, 50).mapToObj((i)->
-                Playlist.builder().user(userService.save(User.builder().email("email-"+i).login("login-"+i).password("password-"+i).build())).build()).toList());
+        var entities = playlistRepository.saveAll(IntStream.range(0, 50).mapToObj((i) ->
+                Playlist.builder().user(userService.save(User.builder().email("email-" + i).login("login-" + i).password("password-" + i).build())).build()).toList());
 
         //        when
         Traverson.TraversalBuilder response = traverson.follow("playlists", "$._embedded.playlists[5]._links.self.href", "self");
@@ -127,13 +122,13 @@ var response = traverson.follow(Hop.rel("playlists")
 
         EntityModel<Playlist> entity =
                 response
-                .toObject(new ParameterizedTypeReference<>() {
-                });
+                        .toObject(new ParameterizedTypeReference<>() {
+                        });
 
 
         ModelValidators.validatePlaylist(softly, entity.getContent(), entities.get(5));
 
-    //        and _embedded.user
+        //        and _embedded.user
 
         User author = new ObjectMapper().convertValue(response.toObject("$._embedded.user"), User.class);
 
@@ -147,21 +142,24 @@ var response = traverson.follow(Hop.rel("playlists")
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ArtistRepository artistRepository;
+
 
     @Test
     public void songs() throws Exception {
 //        given
         var songs = songsRepository.saveAll(
-                Stream.generate(()->Songs.builder().artist(new Artist()).build()).limit(25).toList()
+                Stream.generate(() -> Songs.builder().artist(artistRepository.save(new Artist())).build()).limit(25).toList()
         );
 
-       songs.addAll(
-               songsRepository.saveAll(   Stream.generate(Songs::new).limit(25).toList()
+        songs.addAll(
+                songsRepository.saveAll(Stream.generate(Songs::new).limit(25).toList()
 
-               )
-       );
+                )
+        );
 
-         playlistRepository.saveAll(IntStream.range(0, 50).mapToObj((i)->
+        playlistRepository.saveAll(IntStream.range(0, 50).mapToObj((i) ->
                 Playlist.builder().songs(new HashSet<>(songs.subList(0, i))).build()).toList());
 
         //        when
@@ -179,10 +177,13 @@ var response = traverson.follow(Hop.rel("playlists")
         softly.assertThat(page.getMetadata().getNumber()).isEqualTo(1);
         softly.assertThat(page.getContent()).hasSize(10);
 
+
+
         ModelValidators.validateSongs(softly, page.getContent().stream().toList().get(3).getContent(), songs.get(23));
         //        and _embedded.artist
 
         Artist artist = new ObjectMapper().convertValue(response.toObject("$._embedded.songs[3]._embedded.artist"), Artist.class);
         ModelValidators.validateArtist(softly, artist, songs.get(23).getArtist());
+
     }
 }
