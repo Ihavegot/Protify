@@ -15,12 +15,14 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/artist")
+@ExposesResourceFor(Artist.class)
 public class ArtistController {
     private final ArtistService artistService;
     private final ArtistModelAssembler artistModelAssembler;

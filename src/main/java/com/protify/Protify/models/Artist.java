@@ -20,7 +20,7 @@ public class Artist {
     private String artistName;
     private String name;
     private String surname;
-    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "artist")
     @JsonIgnore
     private List<Songs> songs;
 }

@@ -16,6 +16,8 @@ import org.springframework.hateoas.InputType;
 @NoArgsConstructor
 public class UserDto {
 
+
+    @InputType("email")
     private String email;
     private String login;
     @InputType("password")

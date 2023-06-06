@@ -9,6 +9,7 @@ import com.protify.Protify.models.Songs;
 import com.protify.Protify.models.User;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.Affordance;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.mediatype.hal.HalModelBuilder;
 import org.springframework.hateoas.server.EntityLinks;
