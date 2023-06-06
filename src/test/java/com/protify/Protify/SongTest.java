@@ -87,21 +87,17 @@ class SongTest {
                 });
 
 
-        softly.assertThat(page.getMetadata().getSize()).isEqualTo(20);
-        softly.assertThat(page.getMetadata().getTotalElements()).isEqualTo(50);
-        softly.assertThat(page.getMetadata().getTotalPages()).isEqualTo(3);
-        softly.assertThat(page.getMetadata().getNumber()).isEqualTo(1);
-        softly.assertThat(page.getContent()).hasSize(20);
-        softly.assertThat(page.getContent().stream().toList().get(3).getContent().getId()).isEqualTo(entities.get(23).getId());
+     softly.assertThat(page.getMetadata().getSize()).isEqualTo(20);
+     softly.assertThat(page.getMetadata().getTotalElements()).isEqualTo(50);
+     softly.assertThat(page.getMetadata().getTotalPages()).isEqualTo(3);
+     softly.assertThat(page.getMetadata().getNumber()).isEqualTo(1);
+     softly.assertThat(page.getContent()).hasSize(20);
+     ModelValidators.validateSongs(softly, page.getContent().stream().toList().get(3).getContent(), entities.get(23));
+     //        and _embedded.artist
+     Artist artist = new ObjectMapper().convertValue(response.toObject("$._embedded.songs[3]._embedded.artist"), Artist.class);
+     ModelValidators.validateArtist(softly, artist, entities.get(23).getArtist());
+ }
 
-        //        and _embedded.artist
-
-//     Artist artist = new ObjectMapper().convertValue(response.toObject("$._embedded.songs[3]._embedded.artist"), Artist.class);
-//     softly.assertThat(artist.getId()).isEqualTo(entities.get(23).getArtist().getId());
-//     softly.assertThat(artist.getArtistName()).isEqualTo(entities.get(23).getArtist().getArtistName());
-//     softly.assertThat(artist.getName()).isEqualTo(entities.get(23).getArtist().getName());
-//     softly.assertThat(artist.getSurname()).isEqualTo(entities.get(23).getArtist().getSurname());
-    }
 
 
     @Test
@@ -120,19 +116,11 @@ class SongTest {
         EntityModel<Songs> song =
                 response.toObject(new ParameterizedTypeReference<EntityModel<Songs>>() {
                 });
-
-
-        softly.assertThat(song.getContent().getId()).isEqualTo(entities.get(5).getId());
-        softly.assertThat(song.getContent().getTitle()).isEqualTo(entities.get(5).getTitle());
-
+        ModelValidators.validateSongs(softly, song.getContent(), entities.get(5));
 
         //        and _embedded.artist
 
-//        Artist artist = new ObjectMapper().convertValue(response.toObject("$._embedded.artist"), Artist.class);
-//        softly.assertThat(artist.getId()).isEqualTo(entities.get(5).getArtist().getId());
-//        softly.assertThat(artist.getArtistName()).isEqualTo(entities.get(5).getArtist().getArtistName());
-//        softly.assertThat(artist.getName()).isEqualTo(entities.get(5).getArtist().getName());
-//        softly.assertThat(artist.getSurname()).isEqualTo(entities.get(5).getArtist().getSurname());
-
+        Artist artist = new ObjectMapper().convertValue(response.toObject("$._embedded.artist"), Artist.class);
+        ModelValidators.validateArtist(softly, artist, entities.get(5).getArtist());
     }
 }
