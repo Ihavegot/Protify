@@ -29,7 +29,8 @@ public class Playlist {
     @ManyToMany
     @JsonIgnore
     private Set<Songs> songs;
-
+    @Column(columnDefinition = "varchar default 'New Playlist'")
+    private String title;
     public Playlist() {
 
     }
