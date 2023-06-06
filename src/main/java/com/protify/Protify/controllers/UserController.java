@@ -91,7 +91,8 @@ public class UserController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<EntityModel<User>> deleteUser(@PathVariable("id") Long id, @RequestHeader(required = false) String Accept) {
-        userService.delete(id);
+var user = userService.findById(id);
+userService.delete(user);
 
         if (Accept == null) {
             return ResponseEntity.noContent().build();
