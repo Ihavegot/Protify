@@ -21,6 +21,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.Optional;
 
 @RestController
@@ -46,7 +47,8 @@ public class PlaylistController {
     }
 
     @GetMapping("{id}")
-    public EntityModel<Playlist> getSinglePlaylist(@PathVariable("id") Playlist playlist) {
+    public EntityModel<Playlist> getSinglePlaylist(@PathVariable("id") Long id){
+        Playlist playlist = playlistService.getSinglePlaylist(id);
         return playlistModelAssembler.toModel(playlist);
     }
 

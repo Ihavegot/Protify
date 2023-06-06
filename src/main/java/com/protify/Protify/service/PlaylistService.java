@@ -1,5 +1,6 @@
 package com.protify.Protify.service;
 
+import com.protify.Protify.Exceptions.ResourceNotFoundException;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.repository.PlaylistRepository;
@@ -10,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
 @Service
@@ -22,8 +22,8 @@ public class PlaylistService {
         return playlistRepository.findAll(page);
     }
 
-    public Optional<Playlist> getSinglePlaylist(long id) {
-        return playlistRepository.findById(id);
+    public Playlist getSinglePlaylist(long id){
+        return playlistRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("No playlist with id " + id));
     }
 
     public Playlist addSinglePlaylist(Playlist playlist) {
