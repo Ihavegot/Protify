@@ -1,6 +1,7 @@
 package com.protify.Protify.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -21,16 +22,18 @@ public class UserDto {
     private String login;
     @InputType("password")
     private String password;
+
+    @Schema(hidden = true)
     @AssertTrue
     public boolean isEmailValid() {
         return email == null || !email.isBlank();
     }
-
+    @Schema(hidden = true)
     @AssertTrue
     public boolean isLoginValid() {
         return login == null || !login.isBlank();
     }
-
+    @Schema(hidden = true)
     @AssertTrue
     public boolean isPasswordValid() {
         return password == null || !password.isBlank();

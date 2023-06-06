@@ -10,6 +10,7 @@ import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.User;
 import com.protify.Protify.service.PlaylistService;
 import com.protify.Protify.service.UserService;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +63,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<EntityModel<User>> postUser(@RequestBody @Valid UserDto data, @RequestHeader(required = false) String Accept) {
+    public ResponseEntity<EntityModel<User>> postUser(@RequestBody @Valid UserDto data, @RequestHeader(required = false)  @Parameter(hidden = true) String Accept) {
         User user = userService.save(Mappers.getMapper(UserMapper.class).create(data));
 
         return ResponseEntity.created(
@@ -86,7 +87,7 @@ public class UserController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<EntityModel<User>> deleteUser(@PathVariable("id") User user, @RequestHeader(required = false) String Accept) {
+    public ResponseEntity<EntityModel<User>> deleteUser(@PathVariable("id") User user, @RequestHeader(required = false) @Parameter(hidden = true) String Accept) {
         userService.delete(user);
 
         if (Accept == null) {
@@ -97,7 +98,7 @@ public class UserController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<EntityModel<User>> putUser(@PathVariable Long id, @RequestBody @Valid UserDto body, @RequestHeader(required = false) String Accept) {
+    public ResponseEntity<EntityModel<User>> putUser(@PathVariable Long id, @RequestBody @Valid UserDto body, @RequestHeader(required = false) @Parameter(hidden = true) String Accept) {
 
         User user = Mappers.getMapper(UserMapper.class).create(body);
         user.setId(id);
@@ -111,7 +112,7 @@ public class UserController {
     }
 
     @PatchMapping("{id}")
-    public ResponseEntity<EntityModel<User>> patchUser(@PathVariable("id") User user, @Valid @RequestBody UserDto body, @RequestHeader(required = false) String Accept) {
+    public ResponseEntity<EntityModel<User>> patchUser(@PathVariable("id") User user, @Valid @RequestBody UserDto body, @RequestHeader(required = false) @Parameter(hidden = true) String Accept) {
 
 
         Mappers.getMapper(UserMapper.class).update(user, body);
