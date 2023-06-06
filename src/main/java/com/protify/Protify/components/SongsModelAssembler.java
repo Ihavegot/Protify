@@ -27,7 +27,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @RequiredArgsConstructor
 public class SongsModelAssembler implements RepresentationModelAssembler<Songs, EntityModel<Songs>> {
     private final EntityLinks links;
-
+    private final LinkRelationProvider linkRelationProvider;
     @Override
     public EntityModel<Songs> toModel(Songs entity) {
         HalModelBuilder builder;
@@ -41,8 +41,11 @@ public class SongsModelAssembler implements RepresentationModelAssembler<Songs, 
             throw new RuntimeException(e);
         }
         if (entity.getArtist() != null) {
-            builder = builder.embed(entity.getArtist());
-        }
+
+            builder = builder
+                    .preview(entity.getArtist())
+                    .forLink(links.linkToItemResource(entity.getArtist(), Artist::getId).withRel(linkRelationProvider.getItemResourceRelFor(Artist.class)))
+        ;}
         return (EntityModel<Songs>) builder.build();
     }
 }

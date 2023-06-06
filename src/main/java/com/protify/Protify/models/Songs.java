@@ -22,6 +22,7 @@ public class Songs {
     private String title;
     @ManyToOne
     @JoinColumn(name = "artist")
+    @JsonIgnore
     private Artist artist;
     private Blob songFile;
 

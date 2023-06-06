@@ -11,6 +11,7 @@ import com.protify.Protify.models.Artist;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.models.User;
+import com.protify.Protify.repository.ArtistRepository;
 import com.protify.Protify.repository.PlaylistRepository;
 import com.protify.Protify.repository.SongRepository;
 import com.protify.Protify.repository.UserRepository;
@@ -56,7 +57,9 @@ class PlaylistTest {
     public void beforeEach() {
         playlistRepository.deleteAll();
         userService.deleteAll();
+
         songsRepository.deleteAll();
+        artistRepository.deleteAll();
         traverson = new Traverson(URI.create("http://localhost:" + port + "/"), MediaTypes.HAL_JSON);
 
     }
@@ -139,12 +142,15 @@ class PlaylistTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ArtistRepository artistRepository;
+
 
     @Test
     public void songs() throws Exception {
 //        given
         var songs = songsRepository.saveAll(
-                Stream.generate(() -> Songs.builder().artist(null).build()).limit(25).toList()
+                Stream.generate(() -> Songs.builder().artist(artistRepository.save(new Artist())).build()).limit(25).toList()
         );
 
         songs.addAll(

@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.protify.Protify.models.Artist;
 import com.protify.Protify.models.Songs;
+import com.protify.Protify.repository.ArtistRepository;
 import com.protify.Protify.repository.SongRepository;
 import org.aspectj.lang.annotation.After;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
@@ -55,7 +56,7 @@ class SongTest {
     public void beforeEach() {
 
         songRepository.deleteAll();
-
+        artistRepository.deleteAll();
         traverson = new Traverson(URI.create("http://localhost:" + port + "/"), MediaTypes.HAL_JSON);
 
     }
