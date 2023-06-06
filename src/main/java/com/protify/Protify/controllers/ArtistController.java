@@ -38,7 +38,8 @@ public class ArtistController {
     }
 
     @GetMapping("{id}")
-    public EntityModel<Artist> getSingleArtist(@PathVariable("id") Artist artist) {
+    public EntityModel<Artist> getSingleArtist(@PathVariable("id") Long id) {
+        Artist artist = artistService.getSingleArtist(id);
         return artistModelAssembler.toModel(artist);
     }
 
