@@ -29,7 +29,7 @@ public class PlaylistModelAssembler implements RepresentationModelAssembler<Play
         HalModelBuilder builder = HalModelBuilder.halModelOf(entity)
                 .link(links.linkToItemResource(entity, Playlist::getId)
                         .andAffordance(afford(methodOn(PlaylistController.class).deleteSinglePlaylist(entity.getId())))
-                        .andAffordance(afford(methodOn(PlaylistController.class).updateSinglePlaylist(entity)))
+                        .andAffordance(afford(methodOn(PlaylistController.class).updateSinglePlaylist(entity.getId(),entity.getTitle())))
                 )
                 .link(linkTo(methodOn(PlaylistController.class).getPlaylistSongs(entity.getId(), null, null, null, null)).withRel(
                         linkRelationProvider.getCollectionResourceRelFor(Songs.class)

@@ -3,6 +3,7 @@ package com.protify.Protify.controllers;
 import com.protify.Protify.components.PlaylistModelAssembler;
 import com.protify.Protify.components.SongsModelAssembler;
 import com.protify.Protify.dtos.PlaylistDto;
+import com.protify.Protify.dtos.PlaylistSongsDto;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.service.PlaylistService;
@@ -14,10 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.IanaLinkRelations;
-import org.springframework.hateoas.PagedModel;
-import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.*;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -42,13 +40,17 @@ public class PlaylistController {
     private final SongsModelAssembler songsModelAssembler;
 
     @GetMapping
-    public PagedModel<EntityModel<Playlist>> getPlaylist(@ParameterObject Pageable page, @RequestParam(required = false, name = "page") Integer p,
-                                                         @RequestParam(required = false) Integer size,
-                                                         @RequestParam(required = false) String[] sort
+    public CollectionModel<EntityModel<Playlist>> getPlaylist(@ParameterObject Pageable page, @RequestParam(required = false, name = "page") Integer p,
+                                                              @RequestParam(required = false) Integer size,
+                                                              @RequestParam(required = false) String[] sort
     ) {
 
         Page<Playlist> playlistPage = playlistService.getPlaylist(page);
-        return pagedResourcesAssembler.toModel(playlistPage, playlistModelAssembler);
+        return pagedResourcesAssembler.toModel(playlistPage, playlistModelAssembler)
+                .mapLink(IanaLinkRelations.SELF, link->link.andAffordance(
+                        afford(methodOn(PlaylistController.class).addSinglePlaylist(null))
+                        )
+                        );
     }
 
     @GetMapping("{id}")
@@ -63,18 +65,28 @@ public class PlaylistController {
                                                            @RequestParam(required = false) String[] sort) {
         Page<Songs> songsPage = songService.getSongsByPlaylist(id, page);
         PagedModel<EntityModel<Songs>> songPage = songsPagedResourcesAssembler.toModel(songsPage, songsModelAssembler);
-        songPage.getContent().forEach((song) ->song.mapLink(IanaLinkRelations.SELF, link -> link.andAffordance(afford(methodOn(PlaylistController.class).deleteSongFromPlaylist(id, song.getContent().getId())))));
+        songPage.getContent().forEach((song) ->song.mapLink(IanaLinkRelations.SELF, link -> link.andAffordance(afford(methodOn(PlaylistController.class).deleteSongFromPlaylist(null)))));
         return songPage;
     }
 
-    @PutMapping
-    public ResponseEntity<Playlist> updateSinglePlaylist(@RequestBody Playlist playlist) {
-        return ResponseEntity.of(playlistService.updateSinglePlaylist(playlist));
+    @PostMapping
+    public Playlist addSinglePlaylist(@RequestBody PlaylistDto playlist){
+        return playlistService.addSinglePlaylist(playlist);
     }
 
-    @PatchMapping("{id}/songs/{songId}/delete")
-    public ResponseEntity<Playlist> deleteSongFromPlaylist(@PathVariable("id") Long id, @PathVariable("songId") Long songId) {
-        return ResponseEntity.of(playlistService.deleteSongFromPlaylist(id, songId));
+    @PatchMapping("{id}/{title}")
+    public ResponseEntity<Playlist> updateSinglePlaylist(@PathVariable("id") Long id,@PathVariable("title") String title) {
+        return ResponseEntity.of(playlistService.updateSinglePlaylist(id, title));
+    }
+
+    @DeleteMapping("/songs/delete")
+    public ResponseEntity<Playlist> deleteSongFromPlaylist(@RequestBody PlaylistSongsDto playlist) {
+        return ResponseEntity.of(playlistService.deleteSongFromPlaylist(playlist));
+    }
+
+    @PostMapping("/songs/add")
+    public ResponseEntity<Playlist> addSongToPlaylist(@RequestBody PlaylistSongsDto playlist) {
+        return ResponseEntity.of(playlistService.addSongToPlaylist(playlist));
     }
 
     @DeleteMapping("{id}")

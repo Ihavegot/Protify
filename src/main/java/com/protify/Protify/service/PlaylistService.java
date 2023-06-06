@@ -2,6 +2,7 @@ package com.protify.Protify.service;
 
 import com.protify.Protify.Exceptions.ResourceNotFoundException;
 import com.protify.Protify.dtos.PlaylistDto;
+import com.protify.Protify.dtos.PlaylistSongsDto;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.repository.PlaylistRepository;
@@ -39,18 +40,9 @@ public class PlaylistService {
         return playlistRepository.save(playlist);
     }
 
-    public Optional<Playlist> updateSinglePlaylist(Playlist playlist) {
-        return playlistRepository.findById(playlist.getId()).map(b -> {
-            if (playlist.getUser() != null) {
-                b.setUser(playlist.getUser());
-            }
-            if (playlist.getSongs() != null) {
-                b.setSongs(playlist.getSongs());
-            }
-            if(playlist.getTitle() != null)
-            {
-                b.setTitle(playlist.getTitle());
-            }
+    public Optional<Playlist> updateSinglePlaylist(Long id, String string) {
+        return playlistRepository.findById(id).map(b -> {
+                b.setTitle(string);
             return playlistRepository.save(b);
         });
     }
@@ -64,12 +56,24 @@ public class PlaylistService {
 
     }
 
-    public Optional<Playlist> deleteSongFromPlaylist(Long id, Long songId) {
-        Optional<Playlist> playlist = playlistRepository.findById(id);
+    public Optional<Playlist> deleteSongFromPlaylist(PlaylistSongsDto playlistDto) {
+        Optional<Playlist> playlist = playlistRepository.findById(playlistDto.getPlaylistId());
         if(playlist.isPresent()) {
-            Optional<Songs> song = songRepository.findById(songId);
+            Optional<Songs> song = songRepository.findById(playlistDto.getSongId());
             if(song.isPresent()) {
                 playlist.get().getSongs().remove(song.get());
+                return Optional.of(playlistRepository.save(playlist.get()));
+            }
+        }
+        return Optional.empty();
+    }
+
+    public Optional<Playlist> addSongToPlaylist(PlaylistSongsDto playlistDto) {
+        Optional<Playlist> playlist = playlistRepository.findById(playlistDto.getPlaylistId());
+        if(playlist.isPresent()) {
+            Optional<Songs> song = songRepository.findById(playlistDto.getSongId());
+            if(song.isPresent()) {
+                playlist.get().getSongs().add(song.get());
                 return Optional.of(playlistRepository.save(playlist.get()));
             }
         }
