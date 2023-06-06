@@ -39,18 +39,9 @@ public class PlaylistService {
         return playlistRepository.save(playlist);
     }
 
-    public Optional<Playlist> updateSinglePlaylist(Playlist playlist) {
-        return playlistRepository.findById(playlist.getId()).map(b -> {
-            if (playlist.getUser() != null) {
-                b.setUser(playlist.getUser());
-            }
-            if (playlist.getSongs() != null) {
-                b.setSongs(playlist.getSongs());
-            }
-            if(playlist.getTitle() != null)
-            {
-                b.setTitle(playlist.getTitle());
-            }
+    public Optional<Playlist> updateSinglePlaylist(Long id, String string) {
+        return playlistRepository.findById(id).map(b -> {
+                b.setTitle(string);
             return playlistRepository.save(b);
         });
     }
