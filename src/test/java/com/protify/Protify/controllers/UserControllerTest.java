@@ -1,18 +1,14 @@
 package com.protify.Protify.controllers;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.protify.Protify.ModelValidators;
 import com.protify.Protify.ProtifyApplication;
+import com.protify.Protify.adapter.FormsTraverson;
 import com.protify.Protify.dtos.UserDto;
-import com.protify.Protify.models.Artist;
 import com.protify.Protify.models.Playlist;
-import com.protify.Protify.models.Songs;
 import com.protify.Protify.models.User;
 import com.protify.Protify.repository.PlaylistRepository;
 import com.protify.Protify.service.UserService;
@@ -24,50 +20,36 @@ import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.client.Hop;
-import org.springframework.hateoas.client.Traverson;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.hateoas.config.HypermediaRestTemplateConfigurer;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.StatusResultMatchers;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ProtifyApplication.class)
 @ExtendWith(SoftAssertionsExtension.class)
-
-@AutoConfigureMockMvc
 class UserControllerTest {
 
     
-    @Autowired
-    private  MockMvc mvc;
+
     
     @Value(value="${local.server.port}")
     private int port;
-    private Traverson traverson;
+    private FormsTraverson traverson;
 
 
     @Autowired
@@ -77,10 +59,15 @@ class UserControllerTest {
     public void beforeEach(){
 
         userService.deleteAll();
+        traverson = new FormsTraverson(URI.create("http://localhost:"+port+"/"),
+                configurer
 
-        traverson = new Traverson(URI.create("http://localhost:"+port+"/"), MediaTypes.HAL_JSON);
+
+        );
 
     }
+    @Autowired
+    private HypermediaRestTemplateConfigurer configurer;
 
     @Test
     void getUsers() {
@@ -167,33 +154,7 @@ class UserControllerTest {
         softly.assertThat(page.getContent()).hasSize(20);
         ModelValidators.validatePlaylist(softly, page.getContent().stream().toList().get(3).getContent(), playlists.get(23));
     }
-
-
-
-    @Setter
-    static  class HalFormsModel {
-        @JsonProperty("_templates")
-
-        private Map<String, HalFormModel> templates;
-
-        public HalFormModel get(Object key) {
-            return templates.get(key);
-        }
-    }
-
-
-    @Setter
-    static  class HalFormModel{
-        @Getter private String method;
-        private String target;
-
-        public Optional<URI> getTarget() throws URISyntaxException {
-            if(target == null){
-                return  Optional.empty();
-            }
-            return Optional.of(new URI(target));
-        }
-    }
+    
 
 
     @Autowired
@@ -204,9 +165,7 @@ class UserControllerTest {
 
     var link =  traverson.follow("users").asLink().toUri();
 
-        HalFormsModel page =  getForms(link)   ;
 
-        HalFormModel action = page.get("default");
 
         UserDto expected = new UserDto();
         expected.setLogin("user");
@@ -214,17 +173,13 @@ class UserControllerTest {
         expected.setEmail("user@example.com");
 
 
-        softly.assertThat(action.getMethod()).isEqualTo("POST");
+        //when
+        var request = traverson.follow("users");
+        //then
+        softly.assertThat(request.<String>toObject("$._templates.default.method")).isEqualTo("POST");
 
-        EntityModel<User> result = mapper.readValue(mvc
-                //when
-                .perform(MockMvcRequestBuilders.request(
-             action.getMethod(),
-                        action.getTarget().orElse(link)
-        ).accept(MediaTypes.HAL_JSON).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(expected)
-        ))
-                //then
-                .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString(), new TypeReference<>() {
+        EntityModel<User> result = request.follow("$._templates.default.target")
+                .post(expected, new ParameterizedTypeReference<>() {
         });
 
 
@@ -237,12 +192,6 @@ class UserControllerTest {
 
     }
 
-HalFormsModel    getForms(URI link) throws Exception {
-     return                  mapper.readValue(mvc.perform(MockMvcRequestBuilders.get(link).accept(MediaTypes.HAL_FORMS_JSON))
-                     .andExpect(status().isOk()).andReturn().getResponse().getContentAsString()
-             , new TypeReference<>() {
-             });
-    }
 
 
 
@@ -250,27 +199,18 @@ HalFormsModel    getForms(URI link) throws Exception {
     void deleteUser() throws Exception {
          var user = userService.save(User.builder().build());
 
-        var link = traverson.follow("users").follow("$._embedded.users[0]._links.self.href").asLink().toUri();
 
+        //when
+        var request = traverson.follow("users", "$._embedded.users[0]._links.self.href");
+        //then
+        softly.assertThat(request.<String>toObject("$._templates.default.method")).isEqualTo("DELETE");
 
-        HalFormsModel page =  getForms(link)   ;
-
-
-
-
-        HalFormModel action = page.get("default");
-        softly.assertThat(action.getMethod()).isEqualTo("DELETE");
-
-        EntityModel<User> result = mapper.readValue(mvc
-                //when
-                .perform(MockMvcRequestBuilders.request(
-                        action.getMethod(),
-                                action.getTarget().orElse(link)
-                ).accept(MediaTypes.HAL_JSON)
-                )
-                //then
-                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(), new TypeReference<>() {
+        EntityModel<User> result = request
+                .delete(new ParameterizedTypeReference<>() {
         });
+
+
+
 
         softly.assertThat(userService.findAll(Pageable.unpaged())).hasSize(0);
 
@@ -290,21 +230,17 @@ HalFormsModel    getForms(URI link) throws Exception {
         expected.setEmail("user@example.com");
 
 
-        var link =  traverson.follow("users", "$._embedded.users[0]._links.self.href").asLink().toUri();
-        HalFormsModel page =  getForms(link)   ;
-        HalFormModel action = page.get("putUser");
-        softly.assertThat(action.getMethod()).isEqualTo("PUT");
+//when
+var request =  traverson.follow("users", "$._embedded.users[0]._links.self.href");
+//then
 
-        EntityModel<User> result = mapper.readValue(mvc
-                //when
-                .perform(MockMvcRequestBuilders.request(
-                        action.getMethod(),
-                        action.getTarget().orElse(link)
-                ).accept(MediaTypes.HAL_JSON).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(expected)
-                ))
-                //then
-                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(), new TypeReference<>() {
-        });
+
+        softly.assertThat(request.<String>toObject("$._templates.putUser.method")).isEqualTo("PUT");
+
+        EntityModel<User> result = request
+                .put(expected, new ParameterizedTypeReference<>() {
+                })
+                ;
 
 
         User other = userService.findAll(Pageable.unpaged()).stream().findFirst().orElseThrow();
@@ -329,21 +265,18 @@ HalFormsModel    getForms(URI link) throws Exception {
         expected.setEmail("user@example.com");
 
 
-        var link =  traverson.follow("users", "$._embedded.users[0]._links.self.href").asLink().toUri();
-        HalFormsModel page =  getForms(link)   ;
-        HalFormModel action = page.get("patchUser");
-        softly.assertThat(action.getMethod()).isEqualTo("PATCH");
+        //        when
+        var request = traverson.follow("users", "$._embedded.users[0]._links.self.href");
 
-        EntityModel<User> result = mapper.readValue(mvc
-                //when
-                .perform(MockMvcRequestBuilders.request(
-                        action.getMethod(),
-                        action.getTarget().orElse(link)
-                ).accept(MediaTypes.HAL_JSON).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(expected)
-                ))
-                //then
-                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(), new TypeReference<>() {
-        });
+        //        then
+
+        softly.assertThat(request.<String>toObject("$._templates.patchUser.method")).isEqualTo("PATCH");
+
+
+         EntityModel<User> result = request
+                .patch(expected, new ParameterizedTypeReference<>() {
+                })
+        ;
 
 
         User other = userService.findAll(Pageable.unpaged()).stream().findFirst().orElseThrow();
@@ -354,6 +287,7 @@ HalFormsModel    getForms(URI link) throws Exception {
         ModelValidators.validateUser(softly, result.getContent(), other);
 
     }
+
 
 
 }
