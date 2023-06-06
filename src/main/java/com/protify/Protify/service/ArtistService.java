@@ -1,5 +1,6 @@
 package com.protify.Protify.service;
 
+import com.protify.Protify.Exceptions.ResourceNotFoundException;
 import com.protify.Protify.models.Artist;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
@@ -17,35 +18,35 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ArtistService {
     private final ArtistRepository artistRepository;
-    public Page<Artist> getArtist(Pageable page){
+
+    public Page<Artist> getArtist(Pageable page) {
         return artistRepository.findAll(page);
     }
 
-    public Optional<Artist> getSingleArtist(long id){
-        return artistRepository.findById(id);
+    public Artist getSingleArtist(long id) {
+        return artistRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("No Artist with id" +id));
     }
 
-    public Artist addSingleArtist(Artist artist){
+    public Artist addSingleArtist(Artist artist) {
         return artistRepository.save(artist);
     }
 
-    public Optional<Artist> updateSingleArtist(Artist artist){
+    public Optional<Artist> updateSingleArtist(Artist artist) {
         return artistRepository.findById(artist.getId()).map(b -> {
             if (artist.getArtistName() != null) {
                 b.setArtistName(artist.getArtistName());
             }
-            if(artist.getName() != null){
+            if (artist.getName() != null) {
                 b.setName(artist.getName());
             }
-            if(artist.getSurname() != null)
-            {
+            if (artist.getSurname() != null) {
                 b.setSurname(artist.getSurname());
             }
             return artistRepository.save(b);
         });
     }
 
-    public void deleteSingleArtist(long id){
+    public void deleteSingleArtist(long id) {
         artistRepository.deleteById(id);
     }
 }

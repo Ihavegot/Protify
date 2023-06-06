@@ -22,20 +22,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @Component
 @RequiredArgsConstructor
 public class PlaylistModelAssembler implements RepresentationModelAssembler<Playlist, EntityModel<Playlist>> {
-
     private final EntityLinks links;
-
     private final LinkRelationProvider linkRelationProvider;
-
-
     @Override
     public EntityModel<Playlist> toModel(Playlist entity) {
-
-
         HalModelBuilder builder = HalModelBuilder.halModelOf(entity)
                 .link(links.linkToItemResource(entity, Playlist::getId)
                         .andAffordance(afford(methodOn(PlaylistController.class).deleteSinglePlaylist(entity.getId())))
-                        .andAffordance(afford(methodOn(PlaylistController.class).updateSinglePlaylist(entity)))
+                        .andAffordance(afford(methodOn(PlaylistController.class).updateSinglePlaylist(entity.getId(),entity.getTitle())))
                 )
                 .link(linkTo(methodOn(PlaylistController.class).getPlaylistSongs(entity.getId(), null, null, null, null)).withRel(
                         linkRelationProvider.getCollectionResourceRelFor(Songs.class)
@@ -47,15 +41,11 @@ public class PlaylistModelAssembler implements RepresentationModelAssembler<Play
 
         if (entity.getUser() != null) {
             builder = builder
-
                     .preview(entity.getUser())
-
-       .forLink( links.linkToItemResource(entity.getUser(), User::getId) .withRel( linkRelationProvider.getItemResourceRelFor(User.class)))
+                    .forLink(links.linkToItemResource(entity.getUser(), User::getId).withRel(linkRelationProvider.getItemResourceRelFor(User.class)))
             ;
         }
-
         return (EntityModel<Playlist>) builder
                 .build();
-
     }
 }

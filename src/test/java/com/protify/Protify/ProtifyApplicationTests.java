@@ -9,12 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class ProtifyApplicationTests {
-
 	@Test
 	@DisplayName("Context Loads")
-	void contextLoads() {
-	}
-
-
-
+	void contextLoads() {}
 }

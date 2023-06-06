@@ -14,16 +14,17 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Relation(collectionRelation = "users", itemRelation = "user")
-public class User{
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String email;
     private String login;
     @JsonIgnore
-  private String password;
+    private String password;
 
 
-    @OneToMany( mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonIgnore  private List<Playlist> playlists;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Playlist> playlists;
 }
