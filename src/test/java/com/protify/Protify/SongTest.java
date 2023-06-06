@@ -59,7 +59,9 @@ class SongTest {
         traverson = new Traverson(URI.create("http://localhost:" + port + "/"), MediaTypes.HAL_JSON);
 
     }
-    @Autowired
+@Autowired
+private ArtistRepository artistRepository;
+@Autowired
     private SongRepository songRepository;
 
 
