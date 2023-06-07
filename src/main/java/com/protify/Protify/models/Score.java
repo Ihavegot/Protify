@@ -19,5 +19,6 @@ public class Score {
     @ManyToOne
     @JoinColumn(name = "songs")
     private Songs songs;
+    @Column(columnDefinition = "float default '0.0'")
     private float score;
 }
