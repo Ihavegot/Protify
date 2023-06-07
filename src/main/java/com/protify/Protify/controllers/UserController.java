@@ -11,6 +11,7 @@ import com.protify.Protify.models.User;
 import com.protify.Protify.repository.UserRepository;
 import com.protify.Protify.service.PlaylistService;
 import com.protify.Protify.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
@@ -54,6 +55,7 @@ public class UserController {
 
 
     @GetMapping
+    @Operation(summary="User list")
     public PagedModel<EntityModel<User>> getUser(@ParameterObject Pageable pageable, @RequestParam(required = false) Integer page,
                                                  @RequestParam(required = false) Integer size,
                                                  @RequestParam(required = false) String[] sort) {
@@ -68,6 +70,7 @@ public class UserController {
     }
 
     @PostMapping
+    @Operation(summary="Create User")
     public ResponseEntity<EntityModel<User>> postUser(@RequestBody @Valid UserDto data, @RequestHeader(required = false)  @Parameter(hidden = true) String Accept) {
         User user = userService.save(Mappers.getMapper(UserMapper.class).create(data));
 
@@ -78,6 +81,7 @@ public class UserController {
 
 
     @GetMapping("{id}")
+    @Operation(summary="Get User")
     public EntityModel<User> getSingleUser(@PathVariable("id") Long id) {
         User user = userService.getSingle(id);
         return userModelAssembler.toModel(user);
@@ -85,6 +89,7 @@ public class UserController {
 
 
     @GetMapping("{id}/playlists")
+    @Operation(summary="Get User's Playlist list")
     public PagedModel<EntityModel<Playlist>> getPlaylists(@PathVariable Long id, @ParameterObject Pageable pageable, @RequestParam(required = false) Integer page,
                                                           @RequestParam(required = false) Integer size,
                                                           @RequestParam(required = false) String[] sort) {
@@ -93,6 +98,7 @@ public class UserController {
     }
 
     @DeleteMapping("{id}")
+    @Operation(summary="Delete User")
     public ResponseEntity<EntityModel<User>> deleteUser(@PathVariable("id") Long id, @RequestHeader(required = false) @Parameter(hidden = true) String Accept) {
         var user = userService.getSingle(id);
         userService.delete(user);
@@ -106,6 +112,7 @@ public class UserController {
     }
 
     @PutMapping("{id}")
+    @Operation(summary="Upsert User")
     public ResponseEntity<EntityModel<User>> putUser(@PathVariable Long id, @RequestBody @Valid UserDto body, @RequestHeader(required = false) @Parameter(hidden = true) String Accept) {
 
         User user = Mappers.getMapper(UserMapper.class).create(body);
@@ -121,6 +128,7 @@ public class UserController {
 
     @PatchMapping("{id}")
     public ResponseEntity<EntityModel<User>> patchUser(@PathVariable("id") @Parameter(schema = @Schema(type="integer")) User user, @Valid @RequestBody UserDto body, @RequestHeader(required = false) @Parameter(hidden=true) String Accept) {
+
 
 
         Mappers.getMapper(UserMapper.class).update(user, body);
