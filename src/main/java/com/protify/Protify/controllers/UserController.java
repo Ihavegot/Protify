@@ -12,6 +12,7 @@ import com.protify.Protify.repository.UserRepository;
 import com.protify.Protify.service.PlaylistService;
 import com.protify.Protify.service.UserService;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -119,7 +120,7 @@ public class UserController {
     }
 
     @PatchMapping("{id}")
-    public ResponseEntity<EntityModel<User>> patchUser(@PathVariable("id") User user, @Valid @RequestBody UserDto body, @RequestHeader(required = false) @Parameter(hidden = true) String Accept) {
+    public ResponseEntity<EntityModel<User>> patchUser(@PathVariable("id") @Parameter(schema = @Schema(type="integer")) User user, @Valid @RequestBody UserDto body, @RequestHeader(required = false) @Parameter(hidden=true) String Accept) {
 
 
         Mappers.getMapper(UserMapper.class).update(user, body);
