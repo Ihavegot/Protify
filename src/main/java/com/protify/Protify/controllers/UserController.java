@@ -112,7 +112,7 @@ public class UserController {
     }
 
     @PutMapping("{id}")
-    @Operation(summary="Upsert User")
+    @Operation(summary="Update User")
     public ResponseEntity<EntityModel<User>> putUser(@PathVariable Long id, @RequestBody @Valid UserDto body, @RequestHeader(required = false) @Parameter(hidden = true) String Accept) {
 
         User user = Mappers.getMapper(UserMapper.class).create(body);
@@ -127,10 +127,8 @@ public class UserController {
     }
 
     @PatchMapping("{id}")
+    @Operation(summary="Update User")
     public ResponseEntity<EntityModel<User>> patchUser(@PathVariable("id") @Parameter(schema = @Schema(type="integer")) User user, @Valid @RequestBody UserDto body, @RequestHeader(required = false) @Parameter(hidden=true) String Accept) {
-
-
-
         Mappers.getMapper(UserMapper.class).update(user, body);
 
         user = userService.save(user);

@@ -56,6 +56,7 @@ public class SongsController {
     }
 
     @PostMapping
+    @Operation(summary="Create Song")
     public Songs postSong(@RequestBody SongDto song) {
         return songService.postSong(song);
     }
@@ -68,8 +69,9 @@ public class SongsController {
 
     @DeleteMapping("{id}")
     @Operation(summary="Delete Song")
-    public ResponseEntity<Songs> deleteSong(@PathVariable("id") Long id) {
+    public ResponseEntity<EntityModel<Songs>> deleteSong(@PathVariable("id") Long id) {
+        var song = songService.getSingleSong(id);
         songService.deleteSong(id);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(songsModelAssembler.toModel(song));
     }
 }
