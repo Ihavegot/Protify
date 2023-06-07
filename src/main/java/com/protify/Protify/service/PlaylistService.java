@@ -3,6 +3,7 @@ package com.protify.Protify.service;
 import com.protify.Protify.Exceptions.ResourceNotFoundException;
 import com.protify.Protify.dtos.PlaylistDto;
 import com.protify.Protify.dtos.PlaylistSongsDto;
+import com.protify.Protify.dtos.PlaylistTitleDto;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.repository.PlaylistRepository;
@@ -39,9 +40,9 @@ public class PlaylistService {
         return playlistRepository.save(playlist);
     }
 
-    public Optional<Playlist> updateSinglePlaylist(Long id, String string) {
+    public Optional<Playlist> updateSinglePlaylist(Long id, PlaylistTitleDto string) {
         return playlistRepository.findById(id).map(b -> {
-                b.setTitle(string);
+                b.setTitle(string.getTitle());
             return playlistRepository.save(b);
         });
     }
