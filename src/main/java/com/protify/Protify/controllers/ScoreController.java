@@ -50,7 +50,7 @@ public class ScoreController {
 
     @PostMapping
     @Operation(summary="Create Score")
-    public Score addSingleArtist(@RequestBody ScoreDto scoreDto) {
+    public Score addSingleScore(@RequestBody ScoreDto scoreDto) {
         return scoreService.addSingleScore(scoreDto);
     }
 

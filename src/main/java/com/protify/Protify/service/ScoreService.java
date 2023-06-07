@@ -28,11 +28,11 @@ public class ScoreService {
     private final UserRepository userRepository;
     private final SongRepository songRepository;
     public Page<Score> getSingleSongScores(Long id, Pageable page) {
-        return scoreRepository.findAllBySongs(id, page);
+        return scoreRepository.findAllBySongsId(id, page);
     }
 
     public Page<Score> getSingleUserScores(Long id, Pageable page) {
-        return scoreRepository.findAllByUser(id, page);
+        return scoreRepository.findAllByUserId(id, page);
     }
 
     public Score addSingleScore(ScoreDto scoreDto) {

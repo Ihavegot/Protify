@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ScoreRepository extends JpaRepository<Score, Long> {
-    Page<Score> findAllBySongs(Long id, Pageable page);
-    Page<Score> findAllByUser(Long id,Pageable page);
+    Page<Score> findAllBySongsId(Long id, Pageable page);
+    Page<Score> findAllByUserId(Long id,Pageable page);
 }
