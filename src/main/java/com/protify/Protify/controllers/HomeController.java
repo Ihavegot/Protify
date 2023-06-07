@@ -3,6 +3,7 @@ package com.protify.Protify.controllers;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import com.protify.Protify.models.Artist;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.models.User;
@@ -34,11 +35,13 @@ public class HomeController {
                                 .withRel(linkRelationProvider.getCollectionResourceRelFor(Songs.class)),
                         linkTo(methodOn(PlaylistController.class)
                                 .getPlaylist(null, null, null, null))
-                                .withRel(linkRelationProvider.getCollectionResourceRelFor(Playlist.class))
-                        ,
+                                .withRel(linkRelationProvider.getCollectionResourceRelFor(Playlist.class)),
                         linkTo(methodOn(UserController.class)
                                 .getUser(null, null, null, null))
-                                .withRel(linkRelationProvider.getCollectionResourceRelFor(User.class))
+                                .withRel(linkRelationProvider.getCollectionResourceRelFor(User.class)),
+                        linkTo(methodOn(ArtistController.class)
+                                .getArtists(null, null, null, null))
+                                .withRel(linkRelationProvider.getCollectionResourceRelFor(Artist.class))
                 )
         );
     }

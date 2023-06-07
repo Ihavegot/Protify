@@ -35,7 +35,9 @@ public class ArtistController {
 
     @GetMapping
     @Operation(summary="Get Artist list")
-    public PagedModel<EntityModel<Artist>> getArtists(@ParameterObject Pageable page) {
+    public PagedModel<EntityModel<Artist>> getArtists(@ParameterObject Pageable page, @RequestParam(required = false, name = "page") Integer p,
+                                                      @RequestParam(required = false) Integer size,
+                                                      @RequestParam(required = false) String[] sort) {
         Page<Artist> artistPage = artistService.getArtist(page);
         return pagedResourcesAssembler.toModel(artistPage, artistModelAssembler);
     }
