@@ -7,6 +7,7 @@ import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.service.ArtistService;
 import com.protify.Protify.service.SongService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -33,36 +34,42 @@ public class ArtistController {
     private final SongsModelAssembler songsModelAssembler;
 
     @GetMapping
+    @Operation(summary="Get Artist list")
     public PagedModel<EntityModel<Artist>> getArtists(@ParameterObject Pageable page, @RequestParam(required = false, name = "page") Integer p,
                                                       @RequestParam(required = false) Integer size,
                                                       @RequestParam(required = false) String[] sort) {
+    public PagedModel<EntityModel<Artist>> getArtists(@ParameterObject Pageable page) {
         Page<Artist> artistPage = artistService.getArtist(page);
         return pagedResourcesAssembler.toModel(artistPage, artistModelAssembler);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("{id}")    @Operation(summary="Get Artist")
     public EntityModel<Artist> getSingleArtist(@PathVariable("id") Long id) {
         Artist artist = artistService.getSingleArtist(id);
         return artistModelAssembler.toModel(artist);
     }
 
     @GetMapping("{id}/songs")
+    @Operation(summary="Get Artist's Song list")
     public PagedModel<EntityModel<Songs>> getSongsByArtist(@PathVariable("id") Long id, @ParameterObject Pageable page) {
         Page<Songs> songsPage = songService.getSongsByArtist(id, page);
         return songsPagedResourcesAssembler.toModel(songsPage, songsModelAssembler);
     }
 
     @PostMapping
+    @Operation(summary="Create Artist")
     public Artist addSingleArtist(@RequestBody Artist artist) {
         return artistService.addSingleArtist(artist);
     }
 
     @PutMapping
+    @Operation(summary="Update Artist")
     public ResponseEntity<Artist> updateSingleArtist(@RequestBody Artist artist) {
         return ResponseEntity.of(artistService.updateSingleArtist(artist));
     }
 
     @DeleteMapping("{id}")
+    @Operation(summary="Delete Artist")
     public ResponseEntity<Artist> deleteSingleArtist(@PathVariable("id") Long id) {
         artistService.deleteSingleArtist(id);
         return ResponseEntity.ok(null);

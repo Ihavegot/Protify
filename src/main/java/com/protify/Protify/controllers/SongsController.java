@@ -10,6 +10,8 @@ import com.protify.Protify.models.Songs;
 import com.protify.Protify.models.User;
 import com.protify.Protify.repository.SongRepository;
 import com.protify.Protify.service.SongService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.info.Info;
 import lombok.RequiredArgsConstructor;
 
 import org.springdoc.core.annotations.ParameterObject;
@@ -38,6 +40,7 @@ public class SongsController {
     private final PagedResourcesAssembler<Songs> pagedResourcesAssembler;
 
     @GetMapping
+    @Operation(summary="Song list")
     public PagedModel<EntityModel<Songs>> getSongs(@ParameterObject Pageable page, @RequestParam(required = false, name = "page") Integer p,
                                                    @RequestParam(required = false) Integer size,
                                                    @RequestParam(required = false) String[] sort) {
@@ -46,6 +49,7 @@ public class SongsController {
     }
 
     @GetMapping("{id}")
+    @Operation(summary="Get Song")
     public EntityModel<Songs> getSingleSong(@PathVariable("id") Long id) {
         Songs entity = songService.getSingleSong(id);
         return songsModelAssembler.toModel(entity);
@@ -57,11 +61,13 @@ public class SongsController {
     }
 
     @PutMapping("{id}")
+    @Operation(summary="Update Song")
     public ResponseEntity<Songs> putSong(@PathVariable("id") Long id, @RequestBody SongDto song) throws Exception {
         return songService.putSong(id, song);
     }
 
     @DeleteMapping("{id}")
+    @Operation(summary="Delete Song")
     public ResponseEntity<Songs> deleteSong(@PathVariable("id") Long id) {
         songService.deleteSong(id);
         return ResponseEntity.ok(null);

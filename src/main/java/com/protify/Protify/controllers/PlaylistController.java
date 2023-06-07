@@ -8,6 +8,7 @@ import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.service.PlaylistService;
 import com.protify.Protify.service.SongService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -40,6 +41,7 @@ public class PlaylistController {
     private final SongsModelAssembler songsModelAssembler;
 
     @GetMapping
+    @Operation(summary="Get Playlist list")
     public CollectionModel<EntityModel<Playlist>> getPlaylist(@ParameterObject Pageable page, @RequestParam(required = false, name = "page") Integer p,
                                                               @RequestParam(required = false) Integer size,
                                                               @RequestParam(required = false) String[] sort
@@ -54,12 +56,14 @@ public class PlaylistController {
     }
 
     @GetMapping("{id}")
+    @Operation(summary="Get Playlist")
     public EntityModel<Playlist> getSinglePlaylist(@PathVariable("id") Long id){
         Playlist playlist = playlistService.getSinglePlaylist(id);
         return playlistModelAssembler.toModel(playlist);
     }
 
     @GetMapping("{id}/songs")
+    @Operation(summary="Get Playlist's Song list")
     public PagedModel<EntityModel<Songs>> getPlaylistSongs(@PathVariable("id") Long id, @ParameterObject Pageable page, @RequestParam(required = false, name = "page") Integer p,
                                                            @RequestParam(required = false) Integer size,
                                                            @RequestParam(required = false) String[] sort) {
@@ -70,26 +74,31 @@ public class PlaylistController {
     }
 
     @PostMapping
+    @Operation(summary="Create Playlist")
     public Playlist addSinglePlaylist(@RequestBody PlaylistDto playlist){
         return playlistService.addSinglePlaylist(playlist);
     }
 
     @PatchMapping("{id}/{title}")
+    @Operation(summary="Update Playlist")
     public ResponseEntity<Playlist> updateSinglePlaylist(@PathVariable("id") Long id,@PathVariable("title") String title) {
         return ResponseEntity.of(playlistService.updateSinglePlaylist(id, title));
     }
 
     @DeleteMapping("/songs/delete")
+    @Operation(summary="From Playlist delete Song")
     public ResponseEntity<Playlist> deleteSongFromPlaylist(@RequestBody PlaylistSongsDto playlist) {
         return ResponseEntity.of(playlistService.deleteSongFromPlaylist(playlist));
     }
 
     @PostMapping("/songs/add")
+    @Operation(summary="To Playlist add Song")
     public ResponseEntity<Playlist> addSongToPlaylist(@RequestBody PlaylistSongsDto playlist) {
         return ResponseEntity.of(playlistService.addSongToPlaylist(playlist));
     }
 
     @DeleteMapping("{id}")
+    @Operation(summary="Delete Playlist")
     public ResponseEntity<Playlist> deleteSinglePlaylist(@PathVariable("id") Long id) {
         playlistService.deleteSinglePlaylist(id);
         return ResponseEntity.ok(null);

@@ -7,6 +7,7 @@ import com.protify.Protify.models.Artist;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.models.User;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.RepresentationModel;
@@ -23,7 +24,9 @@ import java.util.List;
 public class HomeController {
     private final EntityLinks links;
     private final LinkRelationProvider linkRelationProvider;
+    
     @GetMapping(value = "/", produces = {MediaTypes.HAL_JSON_VALUE, MediaTypes.HAL_FORMS_JSON_VALUE})
+    @Operation(summary="Get Link list")
     public RepresentationModel<?> homeEndpoint() {
         return RepresentationModel.of(null,
                 List.of(
