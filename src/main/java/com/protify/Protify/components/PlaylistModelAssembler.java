@@ -1,6 +1,8 @@
 package com.protify.Protify.components;
 
 import com.protify.Protify.controllers.PlaylistController;
+import com.protify.Protify.dtos.PlaylistDto;
+import com.protify.Protify.dtos.PlaylistTitleDto;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.models.User;
@@ -29,7 +31,7 @@ public class PlaylistModelAssembler implements RepresentationModelAssembler<Play
         HalModelBuilder builder = HalModelBuilder.halModelOf(entity)
                 .link(links.linkToItemResource(entity, Playlist::getId)
                         .andAffordance(afford(methodOn(PlaylistController.class).deleteSinglePlaylist(entity.getId())))
-                        .andAffordance(afford(methodOn(PlaylistController.class).updateSinglePlaylist(entity.getId(),entity.getTitle())))
+                        .andAffordance(afford(methodOn(PlaylistController.class).updateSinglePlaylist(entity.getId(), new PlaylistTitleDto())))
                 )
                 .link(linkTo(methodOn(PlaylistController.class).getPlaylistSongs(entity.getId(), null, null, null, null)).withRel(
                         linkRelationProvider.getCollectionResourceRelFor(Songs.class)

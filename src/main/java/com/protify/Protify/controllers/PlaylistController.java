@@ -4,6 +4,7 @@ import com.protify.Protify.components.PlaylistModelAssembler;
 import com.protify.Protify.components.SongsModelAssembler;
 import com.protify.Protify.dtos.PlaylistDto;
 import com.protify.Protify.dtos.PlaylistSongsDto;
+import com.protify.Protify.dtos.PlaylistTitleDto;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.service.PlaylistService;
@@ -79,10 +80,10 @@ public class PlaylistController {
         return playlistService.addSinglePlaylist(playlist);
     }
 
-    @PatchMapping("{id}/{title}")
+    @PatchMapping("{id}")
     @Operation(summary="Update Playlist")
-    public ResponseEntity<Playlist> updateSinglePlaylist(@PathVariable("id") Long id,@PathVariable("title") String title) {
-        return ResponseEntity.of(playlistService.updateSinglePlaylist(id, title));
+    public ResponseEntity<Playlist> updateSinglePlaylist(@PathVariable("id") Long id, @RequestBody PlaylistTitleDto playlistTitleDto) {
+        return ResponseEntity.of(playlistService.updateSinglePlaylist(id, playlistTitleDto));
     }
 
     @DeleteMapping("/songs/delete")
