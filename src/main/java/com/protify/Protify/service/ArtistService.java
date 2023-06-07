@@ -1,6 +1,7 @@
 package com.protify.Protify.service;
 
 import com.protify.Protify.Exceptions.ResourceNotFoundException;
+import com.protify.Protify.dtos.ArtistDto;
 import com.protify.Protify.models.Artist;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -27,23 +29,23 @@ public class ArtistService {
         return artistRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("No Artist with id" +id));
     }
 
-    public Artist addSingleArtist(Artist artist) {
+    public Artist addSingleArtist(ArtistDto artistDto) {
+        Artist artist = new Artist();
+        artist.setName(artistDto.getName());
+        artist.setSurname(artistDto.getSurname());
+        artist.setArtistName(artistDto.getArtistName());
         return artistRepository.save(artist);
     }
 
-    public Optional<Artist> updateSingleArtist(Artist artist) {
-        return artistRepository.findById(artist.getId()).map(b -> {
-            if (artist.getArtistName() != null) {
-                b.setArtistName(artist.getArtistName());
-            }
-            if (artist.getName() != null) {
-                b.setName(artist.getName());
-            }
-            if (artist.getSurname() != null) {
-                b.setSurname(artist.getSurname());
-            }
-            return artistRepository.save(b);
-        });
+    public ResponseEntity<Artist> updateSingleArtist(Long id, ArtistDto artist) {
+        Artist updatedArtist = artistRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No Artist with id " + id));
+        updatedArtist.setName(artist.getName());
+        updatedArtist.setSurname(artist.getSurname());
+        updatedArtist.setArtistName(artist.getArtistName());
+
+        artistRepository.save(updatedArtist);
+        return ResponseEntity.ok(updatedArtist);
     }
 
     public void deleteSingleArtist(long id) {
