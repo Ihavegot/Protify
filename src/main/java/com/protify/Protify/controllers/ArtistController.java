@@ -2,6 +2,7 @@ package com.protify.Protify.controllers;
 
 import com.protify.Protify.components.ArtistModelAssembler;
 import com.protify.Protify.components.SongsModelAssembler;
+import com.protify.Protify.dtos.ArtistDto;
 import com.protify.Protify.models.Artist;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
@@ -57,14 +58,14 @@ public class ArtistController {
 
     @PostMapping
     @Operation(summary="Create Artist")
-    public Artist addSingleArtist(@RequestBody Artist artist) {
+    public Artist addSingleArtist(@RequestBody ArtistDto artist) {
         return artistService.addSingleArtist(artist);
     }
 
-    @PutMapping
+    @PutMapping("{id}")
     @Operation(summary="Update Artist")
-    public ResponseEntity<Artist> updateSingleArtist(@RequestBody Artist artist) {
-        return ResponseEntity.of(artistService.updateSingleArtist(artist));
+    public ResponseEntity<Artist> updateSingleArtist(@PathVariable("id") Long id, @RequestBody ArtistDto artist) throws Exception {
+        return artistService.updateSingleArtist(id, artist);
     }
 
     @DeleteMapping("{id}")
