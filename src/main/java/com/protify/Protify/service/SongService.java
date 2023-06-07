@@ -49,14 +49,13 @@ public class SongService {
         return songRepository.save(newSong);
     }
 
-    public ResponseEntity<Songs> putSong(Long id, SongDto song) throws Exception {
+    public Songs putSong(Long id, SongDto song) throws Exception {
         Songs updatedSong = songRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Not song with id " + id));
         updatedSong.setTitle(song.getTitle());
         updatedSong.setArtist(artistRepository.getReferenceById(song.getArtistId()));
 
-        songRepository.save(updatedSong);
-        return ResponseEntity.ok(updatedSong);
+        return songRepository.save(updatedSong);
     }
 
 }

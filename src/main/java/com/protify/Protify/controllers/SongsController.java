@@ -63,8 +63,9 @@ public class SongsController {
 
     @PutMapping("{id}")
     @Operation(summary="Update Song")
-    public ResponseEntity<Songs> putSong(@PathVariable("id") Long id, @RequestBody SongDto song) throws Exception {
-        return songService.putSong(id, song);
+    public ResponseEntity<Songs> putSong(@PathVariable("id") Long id, @RequestBody SongDto songDto) throws Exception {
+        Songs song = songService.putSong(id, songDto);
+        return ResponseEntity.ok(song);
     }
 
     @DeleteMapping("{id}")

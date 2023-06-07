@@ -37,15 +37,14 @@ public class ArtistService {
         return artistRepository.save(artist);
     }
 
-    public ResponseEntity<Artist> updateSingleArtist(Long id, ArtistDto artist) {
+    public Artist updateSingleArtist(Long id, ArtistDto artist) {
         Artist updatedArtist = artistRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No Artist with id " + id));
         updatedArtist.setName(artist.getName());
         updatedArtist.setSurname(artist.getSurname());
         updatedArtist.setArtistName(artist.getArtistName());
 
-        artistRepository.save(updatedArtist);
-        return ResponseEntity.ok(updatedArtist);
+        return artistRepository.save(updatedArtist);
     }
 
     public void deleteSingleArtist(long id) {
