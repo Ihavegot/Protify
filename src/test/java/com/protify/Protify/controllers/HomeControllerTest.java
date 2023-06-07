@@ -27,6 +27,7 @@ import org.springframework.hateoas.client.Hop;
 import org.springframework.hateoas.client.Traverson;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.net.URI;
@@ -36,13 +37,13 @@ import java.net.URI;
 class HomeControllerTest {
 
 
-    @Value(value="${local.server.port}")
+    @Value(value = "${local.server.port}")
     private int port;
     private Traverson traverson;
 
     @BeforeEach
-    public void beforeEach(){
-        traverson = new Traverson(URI.create("http://localhost:"+port+"/"), MediaTypes.HAL_JSON);
+    public void beforeEach() {
+        traverson = new Traverson(URI.create("http://localhost:" + port + "/"), MediaTypes.HAL_JSON);
 
     }
 
@@ -50,17 +51,15 @@ class HomeControllerTest {
     private SoftAssertions softly;
 
     @ParameterizedTest
-    @CsvSource({"songs","playlists","users"})
+    @CsvSource({"songs", "playlists", "users", "artists"})
     void links(String rel) throws Exception {
 
         PagedModel<Object> page = traverson.follow(Hop.rel(rel)
                         .withParameter("page", 1)
                         .withParameter("sort", "id")
                         .withParameter("size", 30))
-                .toObject(new ParameterizedTypeReference<PagedModel<Object>>() {
+                .toObject(new ParameterizedTypeReference<>() {
                 });
-
-
 
         softly.assertThat(page.getMetadata().getNumber()).isEqualTo(1);
         softly.assertThat(page.getMetadata().getSize()).isEqualTo(30);
