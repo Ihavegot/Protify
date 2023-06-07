@@ -30,7 +30,7 @@ public class UserModelAssembler implements RepresentationModelAssembler<User, En
         HalModelBuilder builder = HalModelBuilder.halModelOf(entity)
                 .link(links.linkToItemResource(entity, User::getId)
                         .andAffordance(afford(methodOn(UserController.class).deleteUser(entity.getId(), null)))
-                        .andAffordance(afford(methodOn(UserController.class).patchUser(entity.getId(), null, null)))
+                        .andAffordance(afford(methodOn(UserController.class).patchUser(entity, null, null)))
                         .andAffordance(afford(methodOn(UserController.class).putUser(entity.getId(), null, null)))
                 )
                 .link(linkTo(methodOn(UserController.class).getPlaylists(entity.getId(), null, null, null, null)).withRel(

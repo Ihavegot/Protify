@@ -119,11 +119,12 @@ public class UserController {
     }
 
     @PatchMapping("{id}")
-    public ResponseEntity<EntityModel<User>> patchUser(@PathVariable("id") Long id, @Valid @RequestBody UserDto body, @RequestHeader(required = false) @Parameter(hidden = true) String Accept) {
+    public ResponseEntity<EntityModel<User>> patchUser(@PathVariable("id") User user, @Valid @RequestBody UserDto body, @RequestHeader(required = false) @Parameter(hidden = true) String Accept) {
 
 
-        User user = Mappers.getMapper(UserMapper.class).create(body);
-        user = userService.patch(id, user);
+        Mappers.getMapper(UserMapper.class).update(user, body);
+
+        user = userService.save(user);
 
         if (Accept == null) {
             return ResponseEntity.noContent().build();

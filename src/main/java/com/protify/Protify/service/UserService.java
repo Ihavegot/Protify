@@ -30,13 +30,7 @@ public class UserService {
         userRepository.deleteAll();
     }
 
-    public User patch(Long id, User entity){
-        User patchedUser = userRepository.getReferenceById(id);
-        patchedUser.setLogin(entity.getLogin() != null ? entity.getLogin() : patchedUser.getLogin());
-        patchedUser.setEmail(entity.getEmail() != null ? entity.getEmail() : patchedUser.getEmail());
-        patchedUser.setPassword(entity.getPassword() != null ? entity.getPassword() : patchedUser.getPassword());
-        return userRepository.save(patchedUser);
-    }
+
     public <S extends User> S save(S entity) {
         return userRepository.save(entity);
     }
