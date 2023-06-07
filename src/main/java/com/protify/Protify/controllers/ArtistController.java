@@ -64,8 +64,9 @@ public class ArtistController {
 
     @PutMapping("{id}")
     @Operation(summary="Update Artist")
-    public ResponseEntity<Artist> updateSingleArtist(@PathVariable("id") Long id, @RequestBody ArtistDto artist) throws Exception {
-        return artistService.updateSingleArtist(id, artist);
+    public ResponseEntity<Artist> updateSingleArtist(@PathVariable("id") Long id, @RequestBody ArtistDto artistDto) throws Exception {
+        Artist artist = artistService.updateSingleArtist(id, artistDto);
+        return ResponseEntity.ok(artist);
     }
 
     @DeleteMapping("{id}")
