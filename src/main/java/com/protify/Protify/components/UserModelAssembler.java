@@ -38,7 +38,7 @@ public class UserModelAssembler implements RepresentationModelAssembler<User, En
 
         Link self = links.linkToItemResource(entity, User::getId);
 
-        if(auth.getName().equals(entity.getLogin()) && authorities.contains("profile")){
+        if(auth.getName().equals(entity.getLogin()) && authorities.contains("SCOPE_profile")){
             self = self.andAffordance(afford(methodOn(UserController.class).deleteUser(entity.getId(), null)))
                     .andAffordance(afford(methodOn(UserController.class).patchUser(entity, null, null)))
                     .andAffordance(afford(methodOn(UserController.class).putUser(entity.getId(), null, null)));

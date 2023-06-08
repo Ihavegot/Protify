@@ -61,6 +61,7 @@ import java.util.UUID;
 
 
 @SecurityScheme(name = "security_auth", type = SecuritySchemeType.OAUTH2,
+        openIdConnectUrl = "http://localhost:8080/.well-known/openid-configuration",
         flows = @OAuthFlows(authorizationCode = @OAuthFlow(
                 authorizationUrl = "http://localhost:8080/oauth2/authorize"
                 , tokenUrl = "http://localhost:8080/oauth2/token",scopes = {
@@ -72,17 +73,7 @@ public class AuthConfig {
 
 
     @Bean public PasswordEncoder passwordEncoder(){
-        return new PasswordEncoder(){
-            @Override
-            public String encode(CharSequence rawPassword) {
-                return rawPassword.toString();
-            }
-
-            @Override
-            public boolean matches(CharSequence rawPassword, String encodedPassword) {
-                return encodedPassword.contentEquals(rawPassword);
-            }
-        };
+        return  PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean
@@ -107,19 +98,15 @@ public class AuthConfig {
     @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors()
-                .and()
-                .csrf()
-                .disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                 .permitAll()
                 .requestMatchers(HttpMethod.GET,"/**")
                 .permitAll()
                 .requestMatchers("/users/**")
-                .hasRole("profile")
+                .hasAuthority("SCOPE_profile")
                 .requestMatchers("/playlists/**")
-                .hasRole("playlists")
+                .hasAuthority("SCOPE_playlists")
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -198,7 +185,7 @@ public       UserDetailsService userDetailsService(){
         RegisteredClient registeredClient = RegisteredClient
                 .withId("swagger")
                 .clientId("swagger")
-                .clientSecret("swagger")
+                .clientSecret("{noop}swagger")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
