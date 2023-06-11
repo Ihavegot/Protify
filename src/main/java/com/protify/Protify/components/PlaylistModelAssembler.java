@@ -15,11 +15,16 @@ import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.server.LinkRelationProvider;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.hateoas.server.TypedEntityLinks;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.swing.text.html.parser.Entity;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
+import java.util.Collection;
 
 @Component
 @RequiredArgsConstructor
@@ -28,16 +33,25 @@ public class PlaylistModelAssembler implements RepresentationModelAssembler<Play
     private final LinkRelationProvider linkRelationProvider;
     @Override
     public EntityModel<Playlist> toModel(Playlist entity) {
-        HalModelBuilder builder = HalModelBuilder.halModelOf(entity)
-                .link(links.linkToItemResource(entity, Playlist::getId)
-                        .andAffordance(afford(methodOn(PlaylistController.class).deleteSinglePlaylist(entity.getId())))
-                        .andAffordance(afford(methodOn(PlaylistController.class).updateSinglePlaylist(entity.getId(), new PlaylistTitleDto())))
-                )
+
+        Link self = links.linkToItemResource(entity, Playlist::getId);
+
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Collection<String> authorities = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+
+
+        if( authorities.contains("ROLE_ADMIN") || (entity.getUser()!=null && auth.getName().equals(entity.getUser().getLogin()))) {
+         self = self
+                 .andAffordance(afford(methodOn(PlaylistController.class).deleteSinglePlaylist(entity.getId())))
+                 .andAffordance(afford(methodOn(PlaylistController.class).updateSinglePlaylist(entity.getId(), new PlaylistTitleDto())));
+        }
+
+        HalModelBuilder builder = HalModelBuilder.halModelOf(entity).link(self)
+
                 .link(linkTo(methodOn(PlaylistController.class).getPlaylistSongs(entity.getId(), null, null, null, null)).withRel(
                         linkRelationProvider.getCollectionResourceRelFor(Songs.class)
                 ))
-                //.link(linkTo(methodOn(PlaylistController.class).deleteSinglePlaylist(entity.getId())))
-                //.link(linkTo(methodOn(PlaylistController.class).updateSinglePlaylist(entity)))
                 ;
 
 

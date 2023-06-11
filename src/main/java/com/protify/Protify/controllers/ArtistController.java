@@ -9,6 +9,7 @@ import com.protify.Protify.models.Songs;
 import com.protify.Protify.service.ArtistService;
 import com.protify.Protify.service.SongService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -22,7 +23,7 @@ import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@RestController @SecurityRequirement(name="security_auth")
 @RequiredArgsConstructor
 @RequestMapping(value="/artist", produces = {MediaTypes.HAL_JSON_VALUE, MediaTypes.HAL_FORMS_JSON_VALUE})
 @ExposesResourceFor(Artist.class)
@@ -64,7 +65,7 @@ public class ArtistController {
 
     @PutMapping("{id}")
     @Operation(summary="Update Artist")
-    public ResponseEntity<Artist> updateSingleArtist(@PathVariable("id") Long id, @RequestBody ArtistDto artistDto) throws Exception {
+    public ResponseEntity<Artist> updateSingleArtist(@PathVariable("id") Long id, @RequestBody ArtistDto artistDto) {
         Artist artist = artistService.updateSingleArtist(id, artistDto);
         return ResponseEntity.ok(artist);
     }

@@ -33,12 +33,17 @@ public class UserModelAssembler implements RepresentationModelAssembler<User, En
 
     @Override
     public EntityModel<User> toModel(User entity) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Collection<String> authorities = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+
 
         Link self = links.linkToItemResource(entity, User::getId);
 
-        if(auth.getName().equals(entity.getLogin()) && authorities.contains("SCOPE_profile")){
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Collection<String> authorities = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+
+
+
+        if(auth.getName().equals(entity.getLogin()) || authorities.contains("ROLE_ADMIN")){
             self = self.andAffordance(afford(methodOn(UserController.class).deleteUser(entity.getId(), null)))
                     .andAffordance(afford(methodOn(UserController.class).patchUser(entity, null, null)))
                     .andAffordance(afford(methodOn(UserController.class).putUser(entity.getId(), null, null)));

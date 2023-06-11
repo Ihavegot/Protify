@@ -160,7 +160,7 @@ class PlaylistTest {
         );
 
         playlistRepository.saveAll(IntStream.range(0, 50).mapToObj((i) ->
-                Playlist.builder().songs(new HashSet<>(songs.subList(0, i))).build()).toList());
+                Playlist.builder().user(userRepository.save(new User())).songs(new HashSet<>(songs.subList(0, i))).build()).toList());
 
         //        when
         Traverson.TraversalBuilder response = traverson.follow("playlists", "next", "$._embedded.playlists[10]._links.self.href")

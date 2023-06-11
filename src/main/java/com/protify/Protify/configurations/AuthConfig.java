@@ -102,15 +102,20 @@ public class AuthConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+        http.csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                 .permitAll()
+                .requestMatchers(HttpMethod.POST,"/users")       .permitAll()
                 .requestMatchers(HttpMethod.GET,"/**")       .permitAll()
                 .requestMatchers(HttpMethod.OPTIONS,"/**")
                 .permitAll()
                 .requestMatchers(HttpMethod.HEAD,"/**")
                 .permitAll()
+                .requestMatchers("/songs/**")
+                .hasRole("ROLE_ADMIN")
+                .requestMatchers("/artist/**")
+                .hasRole("ROLE_ADMIN")
                 .anyRequest()
                 .authenticated()
                 .and()
