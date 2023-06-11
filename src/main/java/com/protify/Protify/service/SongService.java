@@ -49,7 +49,7 @@ public class SongService {
         return songRepository.save(newSong);
     }
 
-    public Songs putSong(Long id, SongDto song) throws Exception {
+    public Songs putSong(Long id, SongDto song)  {
         Songs updatedSong = songRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Not song with id " + id));
         updatedSong.setTitle(song.getTitle());

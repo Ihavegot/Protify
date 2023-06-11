@@ -14,6 +14,7 @@ import com.protify.Protify.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +29,11 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@RestController @SecurityRequirement(name="security_auth")
 @ExposesResourceFor(User.class)
 @RequestMapping(value = "/users", produces = {MediaTypes.HAL_JSON_VALUE, MediaTypes.HAL_FORMS_JSON_VALUE})
 @RequiredArgsConstructor
@@ -62,7 +65,7 @@ public class UserController {
         Page<User> users = userService.findAll(pageable);
         PagedModel<EntityModel<User>> model = pagedUserAssembler.toModel(users, userModelAssembler);
 
-        model.mapLink(IanaLinkRelations.SELF, link ->
+        model.   mapLink(IanaLinkRelations.SELF, link ->
                 link.andAffordance(afford(methodOn(UserController.class).postUser(null, null)))
         );
 
@@ -82,6 +85,7 @@ public class UserController {
 
     @GetMapping("{id}")
     @Operation(summary="Get User")
+
     public EntityModel<User> getSingleUser(@PathVariable("id") Long id) {
         User user = userService.getSingle(id);
         return userModelAssembler.toModel(user);
@@ -90,6 +94,7 @@ public class UserController {
 
     @GetMapping("{id}/playlists")
     @Operation(summary="Get User's Playlist list")
+
     public PagedModel<EntityModel<Playlist>> getPlaylists(@PathVariable Long id, @ParameterObject Pageable pageable, @RequestParam(required = false) Integer page,
                                                           @RequestParam(required = false) Integer size,
                                                           @RequestParam(required = false) String[] sort) {
@@ -99,6 +104,8 @@ public class UserController {
 
     @DeleteMapping("{id}")
     @Operation(summary="Delete User")
+    
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @UserService.getSingle(#id).login == authentication.principal.name")
     public ResponseEntity<EntityModel<User>> deleteUser(@PathVariable("id") Long id, @RequestHeader(required = false) @Parameter(hidden = true) String Accept) {
         var user = userService.getSingle(id);
         userService.delete(user);
@@ -113,6 +120,8 @@ public class UserController {
 
     @PutMapping("{id}")
     @Operation(summary="Update User")
+    
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @UserService.getSingle(#id).login == authentication.principal.name")
     public ResponseEntity<EntityModel<User>> putUser(@PathVariable Long id, @RequestBody @Valid UserDto body, @RequestHeader(required = false) @Parameter(hidden = true) String Accept) {
 
         User user = Mappers.getMapper(UserMapper.class).create(body);
@@ -128,6 +137,8 @@ public class UserController {
 
     @PatchMapping("{id}")
     @Operation(summary="Update User")
+    
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @UserService.getSingle(#id).login == authentication.principal.name")
     public ResponseEntity<EntityModel<User>> patchUser(@PathVariable("id") @Parameter(schema = @Schema(type="integer")) User user, @Valid @RequestBody UserDto body, @RequestHeader(required = false) @Parameter(hidden=true) String Accept) {
         Mappers.getMapper(UserMapper.class).update(user, body);
 

@@ -2,18 +2,17 @@ package com.protify.Protify.controllers;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.protify.Protify.ModelValidators;
 import com.protify.Protify.ProtifyApplication;
 import com.protify.Protify.adapter.FormsTraverson;
+
 import com.protify.Protify.dtos.UserDto;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.User;
 import com.protify.Protify.repository.PlaylistRepository;
 import com.protify.Protify.service.UserService;
-import lombok.Getter;
-import lombok.Setter;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -21,68 +20,68 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.ParameterizedTypeReference;
+
 import org.springframework.data.domain.Pageable;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.hateoas.client.Hop;
-import org.springframework.hateoas.config.HypermediaRestTemplateConfigurer;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ProtifyApplication.class)
 @ExtendWith(SoftAssertionsExtension.class)
+@AutoConfigureMockMvc
 class UserControllerTest {
 
     
 
     
-    @Value(value="${local.server.port}")
-    private int port;
+
     private FormsTraverson traverson;
+
+
+
+    @Autowired
+    private MockMvc mvc;
 
 
     @Autowired
     private UserService userService;
 
+
+
+
     @BeforeEach
     public void beforeEach(){
 
         userService.deleteAll();
-        traverson = new FormsTraverson(URI.create("http://localhost:"+port+"/"),
-                configurer
+        traverson = new FormsTraverson(mvc
 
 
         );
 
     }
-    @Autowired
-    private HypermediaRestTemplateConfigurer configurer;
+
 
     @Test
-    void getUsers() {
+    void getUsers() throws Exception {
         //    given
 
         var users =     userService.saveAll(Stream.generate(User::new).limit(50).toList());
 
         //when
-        var response = traverson.follow(Hop.rel("users")
+        var response = traverson.follow(FormsTraverson.Hop.rel("users")
                         .withParameter("page", 1)
                         .withParameter("sort", "id"))
                 .follow("last", "prev", "first", "next", "self");
         //     then
         var page = response
-                .toObject(new ParameterizedTypeReference<PagedModel<EntityModel<User>>>(){});
+                .toObject(new TypeReference<PagedModel<EntityModel<User>>>(){});
 
 
 
@@ -96,7 +95,7 @@ class UserControllerTest {
     }
 
     @Test
-    void getSingleUser() {
+    void getSingleUser() throws Exception {
 
         //    given
 
@@ -108,7 +107,7 @@ class UserControllerTest {
         var        response = traverson.follow("users", "$._embedded.users[0]._links.self.href", "self");
         //    then
         EntityModel<User> entity =
-                response.toObject(new ParameterizedTypeReference<>() {
+                response.toObject(new TypeReference<>() {
                 });
 
 
@@ -124,7 +123,7 @@ class UserControllerTest {
     private PlaylistRepository playlistRepository;
 
     @Test
-    void getPlaylists() {
+    void getPlaylists() throws Exception {
         //    given
         var user =     userService.save(new User());
         List<Playlist> playlists = playlistRepository.saveAll(Stream.generate(()->Playlist.builder().user(user).build()).limit(50).toList());
@@ -137,13 +136,14 @@ class UserControllerTest {
 
 //    when
         var        response = traverson.follow("users", "$._embedded.users[0]._links.self.href")
-                .follow(Hop.rel("playlists")                        .withParameter("page", 1)
+                .follow(FormsTraverson.Hop.rel("playlists")                        .withParameter("page", 1)
                         .withParameter("sort", "id"))
                 .follow("last", "prev", "first", "next", "self");
-
         //    then
+
+
         PagedModel<EntityModel<Playlist>> page =
-                response.toObject(new ParameterizedTypeReference<>() {
+                response.toObject(new TypeReference<>() {
                 });
 
 
@@ -163,7 +163,7 @@ class UserControllerTest {
     @Test
     void postUser() throws Exception {
 
-    var link =  traverson.follow("users").asLink().toUri();
+
 
 
 
@@ -178,8 +178,8 @@ class UserControllerTest {
         //then
         softly.assertThat(request.<String>toObject("$._templates.default.method")).isEqualTo("POST");
 
-        EntityModel<User> result = request.follow("$._templates.default.target")
-                .post(expected, new ParameterizedTypeReference<>() {
+        EntityModel<User> result = request.post("$._templates.default.target"
+                ,expected).toObject( new TypeReference<>() {
         });
 
 
@@ -196,8 +196,9 @@ class UserControllerTest {
 
 
     @Test
+    @WithMockUser(username="foo")
     void deleteUser() throws Exception {
-         var user = userService.save(User.builder().build());
+         var user = userService.save(User.builder().login("foo").build());
 
 
         //when
@@ -206,7 +207,7 @@ class UserControllerTest {
         softly.assertThat(request.<String>toObject("$._templates.default.method")).isEqualTo("DELETE");
 
         EntityModel<User> result = request
-                .delete(new ParameterizedTypeReference<>() {
+                .delete("self").toObject(new TypeReference<>() {
         });
 
 
@@ -219,6 +220,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username="before")
     void putUser_update() throws Exception {
 //        given
 
@@ -231,14 +233,14 @@ class UserControllerTest {
 
 
 //when
-var request =  traverson.follow("users", "$._embedded.users[0]._links.self.href");
+var request =  traverson.follow("users","$._embedded.users[0]._links.self.href");
 //then
 
 
         softly.assertThat(request.<String>toObject("$._templates.putUser.method")).isEqualTo("PUT");
 
         EntityModel<User> result = request
-                .put(expected, new ParameterizedTypeReference<>() {
+                .put("self",expected).toObject( new TypeReference<>() {
                 })
                 ;
 
@@ -256,6 +258,7 @@ var request =  traverson.follow("users", "$._embedded.users[0]._links.self.href"
 
 
     @Test
+    @WithMockUser(username="before")
     void patchUser() throws Exception {
         //        given
 
@@ -274,7 +277,7 @@ var request =  traverson.follow("users", "$._embedded.users[0]._links.self.href"
 
 
          EntityModel<User> result = request
-                .patch(expected, new ParameterizedTypeReference<>() {
+                .patch("self",expected).toObject(new TypeReference<>() {
                 })
         ;
 
