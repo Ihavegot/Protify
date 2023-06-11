@@ -75,4 +75,10 @@ public class SongsController {
         songService.deleteSong(id);
         return ResponseEntity.ok(songsModelAssembler.toModel(song));
     }
+
+    @GetMapping("{id}/score")
+    @Operation(summary = "Get Song Score")
+    public float getSongScore(@PathVariable Long id){
+        return songService.getSongScore(id);
+    }
 }

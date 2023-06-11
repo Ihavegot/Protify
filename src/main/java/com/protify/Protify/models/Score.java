@@ -17,7 +17,8 @@ public class Score {
     @JoinColumn(name = "user_id")
     private User user;
     @ManyToOne
-    @JoinColumn(name = "songs")
+    @JoinColumn(name = "songs_id")
     private Songs songs;
+    @Column(columnDefinition = "float default '0.0'")
     private float score;
 }

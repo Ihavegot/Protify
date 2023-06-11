@@ -6,6 +6,7 @@ import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.repository.ArtistRepository;
 import com.protify.Protify.repository.PlaylistRepository;
+import com.protify.Protify.repository.ScoreRepository;
 import com.protify.Protify.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,7 @@ public class SongService {
     private final SongRepository songRepository;
     public final ArtistRepository artistRepository;
     public final PlaylistRepository playlistRepository;
+    public final ScoreRepository scoreRepository;
 
     public Page<Songs> getSongs(Pageable page) {
         return songRepository.findAll(page);
@@ -56,6 +58,10 @@ public class SongService {
         updatedSong.setArtist(artistRepository.getReferenceById(song.getArtistId()));
 
         return songRepository.save(updatedSong);
+    }
+
+    public float getSongScore(Long id){
+        return scoreRepository.findAvgScore(id);
     }
 
 }
