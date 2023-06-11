@@ -6,6 +6,7 @@ import lombok.*;
 import org.springframework.hateoas.server.core.Relation;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity(name = "\"user\"")
 @Setter
@@ -28,4 +29,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Playlist> playlists;
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private Set<Score> scores;
 }

@@ -9,6 +9,7 @@ import com.protify.Protify.models.Score;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.models.User;
 import com.protify.Protify.repository.UserRepository;
+import com.protify.Protify.service.ScoreService;
 import com.protify.Protify.service.SongService;
 import com.protify.Protify.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,6 +40,8 @@ public class SongsController {
     private final UserRepository userRepository;
 @NonNull
 private final UserService userService;
+@NonNull
+    private ScoreService scoreService;
 
     @GetMapping
     @Operation(summary="Song list")
@@ -79,12 +82,13 @@ private final UserService userService;
         Songs song = songService.getSingleSong(id);
         User user = userService.findByLogin(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
 
-        song.getScores().add(
-                Score.builder().id(ScoreKey.builder().songId(song.getId()).userId(user.getId()).build()).user(
-        user
-                        ).score(scoreDto.getScore()).songs(song)
-                        .build()
+        scoreService.save(
+                Score.builder().id(ScoreKey.builder().userId(user.getId()).songId(song.getId()).build()).user(
+                        user
+                ).score(scoreDto.getScore()).songs(song).build()
         );
+
+
 
 
         return ResponseEntity.ok(songsModelAssembler.toModel(songService.save(song)));

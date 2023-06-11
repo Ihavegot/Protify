@@ -30,7 +30,7 @@ public class Songs {
     @JsonIgnore
     private Set<Playlist> playlists;
 
-    @OneToMany(mappedBy = "songs", cascade = {CascadeType.REMOVE, CascadeType.MERGE})
+    @OneToMany(mappedBy = "songs", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private Set<Score> scores;
 

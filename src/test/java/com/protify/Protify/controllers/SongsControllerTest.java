@@ -7,9 +7,11 @@ import com.protify.Protify.ProtifyApplication;
 import com.protify.Protify.adapter.FormsTraverson;
 import com.protify.Protify.dtos.ScoredSongDto;
 import com.protify.Protify.dtos.SongScoreDto;
+import com.protify.Protify.embeddable.ScoreKey;
 import com.protify.Protify.models.Score;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.models.User;
+import com.protify.Protify.repository.ScoreRepository;
 import com.protify.Protify.service.SongService;
 import com.protify.Protify.service.UserService;
 import org.assertj.core.api.SoftAssertions;
@@ -49,12 +51,20 @@ import java.util.Set;
         private UserService userService;
         @Autowired
         private SongService songService;
+    @Autowired
+    private UserService songsRepository;
 
 
-        @BeforeEach
+
+    @BeforeEach
         public void beforeEach(){
 
+
+
             userService.deleteAll();
+
+            songsRepository.deleteAll();
+
             traverson = new FormsTraverson(mvc
 
 
@@ -64,6 +74,8 @@ import java.util.Set;
 
         @InjectSoftAssertions
         private SoftAssertions softly;
+    @Autowired
+    private ScoreRepository scoreRepository;
 
     @Test
 
@@ -72,10 +84,12 @@ import java.util.Set;
 
     void updateSongsScore() throws Exception {
         var user = userService.save(User.builder().login("foo").build());
-        songService.save( Songs.builder().scores(Set.of(
-                Score.builder().score(0f).user(user).build()
-        )).build());
+;
+        Songs song = songService.save(Songs.builder().build());
 
+        scoreRepository.save(
+                Score.builder().id(ScoreKey.builder().userId(user.getId()).songId(song.getId()).build()).score(0f).user(user).songs(     song ).build()
+        );
 
         FormsTraverson.Builder request = traverson.follow("songs", "$._embedded.songs[0]._links.self.href");
 
@@ -84,10 +98,10 @@ import java.util.Set;
         softly.assertThat(request.<String>toObject("$._templates.default.method")).isEqualTo("PUT");
 
 
-        EntityModel<ScoredSongDto> song = request.put("$._templates.default.target", SongScoreDto.builder().score(12f).build()).toObject(new TypeReference<EntityModel<ScoredSongDto>>() {
+        EntityModel<ScoredSongDto> entity = request.put("$._templates.default.target", SongScoreDto.builder().score(12f).build()).toObject(new TypeReference<EntityModel<ScoredSongDto>>() {
         });
 
-        softly.assertThat(song.getContent().getScore()).isEqualTo(12f);
+        softly.assertThat(entity.getContent().getScore()).isEqualTo(12f);
 
     }
 
