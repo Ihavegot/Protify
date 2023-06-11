@@ -18,7 +18,7 @@ import java.util.Set;
 public class Songs {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String title;
     @ManyToOne
     @JoinColumn(name = "artist")
@@ -30,6 +30,12 @@ public class Songs {
     @JsonIgnore
     private Set<Playlist> playlists;
 
+    @OneToMany(mappedBy = "songs", cascade = {CascadeType.REMOVE, CascadeType.MERGE})
+    @JsonIgnore
+    private Set<Score> scores;
+
     public Songs() {
     }
+
+
 }

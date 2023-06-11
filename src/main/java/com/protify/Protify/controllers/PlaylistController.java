@@ -5,6 +5,7 @@ import com.protify.Protify.components.SongsModelAssembler;
 import com.protify.Protify.dtos.PlaylistDto;
 import com.protify.Protify.dtos.PlaylistSongsDto;
 import com.protify.Protify.dtos.PlaylistTitleDto;
+import com.protify.Protify.dtos.ScoredSongDto;
 import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.service.PlaylistService;
@@ -14,19 +15,13 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.*;
 import org.springframework.hateoas.server.ExposesResourceFor;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import javax.swing.text.html.parser.Entity;
-import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -68,11 +63,11 @@ public class PlaylistController {
 
     @GetMapping("{id}/songs")
     @Operation(summary="Get Playlist's Song list")
-    public PagedModel<EntityModel<Songs>> getPlaylistSongs(@PathVariable("id") Long id, @ParameterObject Pageable page, @RequestParam(required = false, name = "page") Integer p,
-                                                           @RequestParam(required = false) Integer size,
-                                                           @RequestParam(required = false) String[] sort) {
+    public PagedModel<EntityModel<ScoredSongDto>> getPlaylistSongs(@PathVariable("id") Long id, @ParameterObject Pageable page, @RequestParam(required = false, name = "page") Integer p,
+                                                                   @RequestParam(required = false) Integer size,
+                                                                   @RequestParam(required = false) String[] sort) {
         Page<Songs> songsPage = songService.getSongsByPlaylist(id, page);
-        PagedModel<EntityModel<Songs>> songPage = songsPagedResourcesAssembler.toModel(songsPage, songsModelAssembler);
+        PagedModel<EntityModel<ScoredSongDto>> songPage = songsPagedResourcesAssembler.toModel(songsPage, songsModelAssembler);
         songPage.getContent().forEach((song) ->song.mapLink(IanaLinkRelations.SELF, link -> link.andAffordance(afford(methodOn(PlaylistController.class).deleteSongFromPlaylist(null)))));
         return songPage;
     }
