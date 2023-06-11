@@ -12,6 +12,7 @@ import com.protify.Protify.repository.SongRepository;
 import com.protify.Protify.service.SongService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 
 import org.springdoc.core.annotations.ParameterObject;
@@ -26,11 +27,12 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@RestController
+@RestController @SecurityRequirement(name="security_auth")
 @ExposesResourceFor(Songs.class)
 @RequestMapping(value="/songs", produces = {MediaTypes.HAL_JSON_VALUE, MediaTypes.HAL_FORMS_JSON_VALUE})
 @RequiredArgsConstructor
@@ -57,19 +59,25 @@ public class SongsController {
 
     @PostMapping
     @Operation(summary="Create Song")
+    
+
     public Songs postSong(@RequestBody SongDto song) {
         return songService.postSong(song);
     }
 
     @PutMapping("{id}")
     @Operation(summary="Update Song")
-    public ResponseEntity<Songs> putSong(@PathVariable("id") Long id, @RequestBody SongDto songDto) throws Exception {
+    
+
+    public ResponseEntity<Songs> putSong(@PathVariable("id") Long id, @RequestBody SongDto songDto)  {
         Songs song = songService.putSong(id, songDto);
         return ResponseEntity.ok(song);
     }
 
     @DeleteMapping("{id}")
     @Operation(summary="Delete Song")
+    
+
     public ResponseEntity<EntityModel<Songs>> deleteSong(@PathVariable("id") Long id) {
         var song = songService.getSingleSong(id);
         songService.deleteSong(id);

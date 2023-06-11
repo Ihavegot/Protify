@@ -8,6 +8,7 @@ import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.models.User;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.RepresentationModel;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController
+@RestController @SecurityRequirement(name="security_auth")
 
 @RequiredArgsConstructor
 public class HomeController {

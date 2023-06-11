@@ -1,162 +1,226 @@
 package com.protify.Protify.adapter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.hateoas.Link;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
+
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
-import org.springframework.hateoas.client.Hop;
-import org.springframework.hateoas.client.LinkDiscoverer;
-import org.springframework.hateoas.client.Traverson;
-import org.springframework.hateoas.config.HypermediaRestTemplateConfigurer;
-import org.springframework.hateoas.mediatype.hal.forms.HalFormsLinkDiscoverer;
-import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.lang.Nullable;
-import org.springframework.web.client.RestOperations;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.hateoas.mediatype.hal.forms.Jackson2HalFormsModule;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.net.URI;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 public class FormsTraverson {
-    private Traverson traverson;
-    private  List<MediaType> mediaTypes;
 
-    public FormsTraverson(URI uri, HypermediaRestTemplateConfigurer configurer) {
-        this. mediaTypes = Arrays.asList(MediaTypes.HAL_FORMS_JSON);
-        this.traverson = new Traverson(uri, mediaTypes);
+    private final Builder builder;
+    private MockMvc mvc;
+private final  ObjectMapper mapper;
 
+    public FormsTraverson(MockMvc mvc) {
+        this.mvc = mvc;
+        this.builder =  new Builder(()->mvc .perform(MockMvcRequestBuilders.get("/").accept(MediaTypes.HAL_FORMS_JSON)).andReturn().getResponse().getContentAsString());
+        this.mapper = new ObjectMapper();
+        this.mapper.registerModules(
 
-        setLinkDiscoverers(
-                List.of(new HalFormsLinkDiscoverer())
+                new Jackson2HalFormsModule()
+
         );
-        RestTemplate template = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
-        configurer.registerHypermediaTypes(template);
-        setRestOperations(template);
+
+       this. mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
     }
 
-    public static List<HttpMessageConverter<?>> getDefaultMessageConverters(MediaType... mediaTypes) {
-        return Traverson.getDefaultMessageConverters(mediaTypes);
+    public Builder follow(String... rels) {
+        return builder.follow(rels);
     }
 
-    private  RestOperations operations ;
-
-    public Traverson setRestOperations(RestOperations operations) {
-        this.operations = operations;
-        return traverson.setRestOperations(operations);
+    public <T> T toObject(TypeReference<T> typeReference) throws Exception {
+        return builder.toObject(typeReference);
     }
 
-    public Traverson setLinkDiscoverers(List<? extends LinkDiscoverer> discoverer) {
-        return traverson.setLinkDiscoverers(discoverer);
+    public Builder post(String rel, Object body) {
+        return builder.post(rel, body);
     }
 
-    public ExtendedTraversalBuilder follow(String... rels) {
-        return new ExtendedTraversalBuilder(traverson.follow(rels), operations, mediaTypes);
+    public Builder put(String rel, Object body) {
+        return builder.put(rel, body);
     }
 
-    public ExtendedTraversalBuilder follow(Hop hop) {
-        return new ExtendedTraversalBuilder(traverson.follow(hop), operations, mediaTypes);
+    public Builder patch(String rel, Object body) {
+        return builder.patch(rel, body);
     }
 
-    public static  class ExtendedTraversalBuilder{
-        private Traverson.TraversalBuilder traversalBuilder;
+    public Builder delete(String rel) {
+        return builder.delete(rel);
+    }
 
-        private final RestOperations operations ;
-        private  final List<MediaType> mediaTypes;
-        public ExtendedTraversalBuilder(Traverson.TraversalBuilder traversalBuilder, RestOperations operations, List<MediaType> mediaTypes) {
-            this.traversalBuilder = traversalBuilder;
-            this.operations = operations;
-            this.mediaTypes = mediaTypes;
+
+
+
+    public Builder follow(String rel){
+        return builder.follow(rel) ;
+    }
+
+
+    public <T> T toObject() throws Exception {
+        return builder.toObject();
+    }
+
+    public <T> T toObject(String path) throws Exception {
+        return builder.toObject(path);
+    }
+
+    public Builder follow(Hop hop) {
+
+        return builder.follow(hop);
+    }
+
+
+
+
+    public static class Hop {
+        private  final String rel;
+
+        public  static  Hop rel(String rel){
+            return new Hop(rel);
         }
 
-        public ExtendedTraversalBuilder follow(String... rels) {
-            return new ExtendedTraversalBuilder(traversalBuilder.follow(rels), operations,mediaTypes);
+        private Hop(String rel) {
+            this(rel, new HashMap<>());
         }
 
-        public ExtendedTraversalBuilder follow(Hop hop) {
-            return new ExtendedTraversalBuilder(traversalBuilder.follow(hop), operations, mediaTypes);
+        private Hop(String rel, Map<String, Object> parameters) {
+            this.rel = rel;
+            this.parameters = parameters;
         }
 
-        private <T> HttpEntity<T> prepareRequest(T data, HttpHeaders headers) {
-            if (headers.getAccept().isEmpty()) {
-                headers.setAccept(this.mediaTypes);
+        private final Map<String ,Object > parameters;
+
+
+        public Hop withParameter(String key, Object value){
+            HashMap<String, Object> parameters = new HashMap<>(this.parameters);
+            parameters.put(key,value);
+            return new Hop(rel, parameters);
+        }
+    }
+    public class Builder {
+
+        private final Callable<String> previousResponse;
+
+
+
+        public  Builder follow(String ... rels ){
+            Builder acc = this;
+            for(String rel : (rels)){
+                acc = acc.follow(rel);
             }
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            return new HttpEntity<>(data, headers);
+            return     acc;
         }
 
-        public <T> T post(Object data, ParameterizedTypeReference<T> type) throws JsonProcessingException {
-          return  operations.exchange( traversalBuilder.asLink().toUri(),  HttpMethod.POST, prepareRequest(data, new HttpHeaders())
-
-
-             , type).getBody()
-          ;
-
-
-
+        public <T> T toObject(TypeReference<T> typeReference) throws Exception {
+            return  mapper.readValue(previousResponse.call(), typeReference);
         }
 
-        public <T> T put(Object data, ParameterizedTypeReference<T> type){
-            return  operations.exchange( traversalBuilder.asLink().toUri(),  HttpMethod.PUT, prepareRequest(data, new HttpHeaders())
-
-
-                    , type).getBody()
-                    ;
-        }
-
-        public <T> T patch(Object data, ParameterizedTypeReference<T> type){
-            return  operations.exchange( traversalBuilder.asLink().toUri(),  HttpMethod.PATCH, prepareRequest(data, new HttpHeaders())
-
-
-                    , type).getBody()
-                    ;
-        }
-
-        public <T> T delete( ParameterizedTypeReference<T> type){
-            return  operations.exchange( traversalBuilder.asLink().toUri(),  HttpMethod.DELETE, prepareRequest(null, new HttpHeaders())
-
-
-                    , type).getBody()
-                    ;
-        }
-
-        public ExtendedTraversalBuilder withTemplateParameters(Map<String, Object> parameters) {
-            return new ExtendedTraversalBuilder(traversalBuilder.withTemplateParameters(parameters), operations, mediaTypes);
-        }
-
-        public ExtendedTraversalBuilder withHeaders(HttpHeaders headers) {
-            return new ExtendedTraversalBuilder(traversalBuilder.withHeaders(headers), operations, mediaTypes);
-        }
-
-        @Nullable
-        public <T> T toObject(Class<T> type) {
-            return traversalBuilder.toObject(type);
-        }
-
-        @Nullable
-        public <T> T toObject(ParameterizedTypeReference<T> type) {
-            return traversalBuilder.toObject(type);
-        }
-
-        public <T> T toObject(String jsonPath) {
-            return traversalBuilder.toObject(jsonPath);
-        }
-
-        public <T> ResponseEntity<T> toEntity(Class<T> type) {
-            return traversalBuilder.toEntity(type);
-        }
-
-        public Link asLink() {
-            return traversalBuilder.asLink();
-        }
-
-        public Link asTemplatedLink() {
-            return traversalBuilder.asTemplatedLink();
+        public <T> T toObject() throws Exception {
+            return  mapper.readValue(previousResponse.call(), new TypeReference<>() {
+            });
         }
 
 
+        public <T> T toObject(String path) throws Exception {
+            return  JsonPath.read(previousResponse.call(), path);
+        }
+
+
+        public Builder(Callable<String> previousResponse) {
+            this.previousResponse = previousResponse;
+        }
+
+        public Builder follow(String rel){
+            return  follow(new Hop(rel));
+        }
+
+        public  Builder follow(Hop hop){
+            return  follow(HttpMethod.GET, hop, null);
+        }
+        public Builder post( String rel, Object body){
+            return  follow(HttpMethod.POST, rel, body);
+        }
+
+        public Builder put( String rel, Object body){
+            return  follow(HttpMethod.PUT, rel, body);
+        }
+
+        public Builder patch( String rel, Object body){
+            return  follow(HttpMethod.PATCH, rel, body);
+        }
+
+
+        public Builder delete( String rel){
+            return  follow(HttpMethod.DELETE, rel, null);
+        }
+
+        private
+        Builder follow(HttpMethod method, String rel, Object body ){
+            return follow(method, new Hop(rel), body);
+        }
+
+        private
+        Builder follow(HttpMethod method, Hop  hop, Object body ){
+            return new Builder(()-> {
+                String response = previousResponse.call();
+
+                URI uri;
+
+
+
+
+                if(hop.rel.startsWith("$")){
+                    uri = new URI(JsonPath.<String>read(response, hop.rel));
+                }else {
+
+
+
+                    EntityModel<?> entity = mapper.readValue(response, new TypeReference<EntityModel<Object>>() {
+                    });
+
+                    System.out.println(entity);
+
+                    uri = entity
+                            .getRequiredLink(hop.rel).expand(hop.parameters).toUri();
+                }
+
+
+
+                MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(method, uri)
+
+                        .accept(
+                                MediaTypes.HAL_FORMS_JSON
+                        );
+
+
+                if(body != null){
+                    request=request .contentType(MediaType.APPLICATION_JSON)
+                            .content(mapper.writeValueAsString(body));
+                }
+
+
+                return                mvc.perform(request).andExpect((status().is2xxSuccessful())).andReturn().getResponse().getContentAsString();
+
+            }
+
+            );
+        }
     }
 }
