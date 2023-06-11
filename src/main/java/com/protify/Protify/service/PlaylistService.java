@@ -47,6 +47,7 @@ public class PlaylistService {
         });
     }
 
+
     public void deleteSinglePlaylist(long id) {
         playlistRepository.deleteById(id);
     }

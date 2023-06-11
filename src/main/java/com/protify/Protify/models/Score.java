@@ -1,23 +1,30 @@
 package com.protify.Protify.models;
 
+import com.protify.Protify.embeddable.ScoreKey;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.hateoas.server.core.Relation;
 
 @Entity
 @Setter
 @Getter
+@Builder
 @Relation(collectionRelation = "scores", itemRelation = "score")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Score {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+
+    @EmbeddedId
+    private ScoreKey id;
+
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @MapsId("userId")
+    @JoinColumn(name="user_id")
     private User user;
     @ManyToOne
-    @JoinColumn(name = "songs")
+    @MapsId("songId")
+    @JoinColumn(name="songs")
     private Songs songs;
+
     private float score;
 }

@@ -3,8 +3,8 @@ package com.protify.Protify.controllers;
 import com.protify.Protify.components.ArtistModelAssembler;
 import com.protify.Protify.components.SongsModelAssembler;
 import com.protify.Protify.dtos.ArtistDto;
+import com.protify.Protify.dtos.ScoredSongDto;
 import com.protify.Protify.models.Artist;
-import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.service.ArtistService;
 import com.protify.Protify.service.SongService;
@@ -16,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.ExposesResourceFor;
@@ -52,7 +51,7 @@ public class ArtistController {
 
     @GetMapping("{id}/songs")
     @Operation(summary="Get Artist's Song list")
-    public PagedModel<EntityModel<Songs>> getSongsByArtist(@PathVariable("id") Long id, @ParameterObject Pageable page) {
+    public PagedModel<EntityModel<ScoredSongDto>> getSongsByArtist(@PathVariable("id") Long id, @ParameterObject Pageable page) {
         Page<Songs> songsPage = songService.getSongsByArtist(id, page);
         return songsPagedResourcesAssembler.toModel(songsPage, songsModelAssembler);
     }

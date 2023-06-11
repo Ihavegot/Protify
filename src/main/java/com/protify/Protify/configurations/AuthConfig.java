@@ -106,6 +106,7 @@ public class AuthConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                 .permitAll()
+                .requestMatchers(HttpMethod.PUT,"/songs/*/score")       .authenticated()
                 .requestMatchers(HttpMethod.POST,"/users")       .permitAll()
                 .requestMatchers(HttpMethod.GET,"/**")       .permitAll()
                 .requestMatchers(HttpMethod.OPTIONS,"/**")

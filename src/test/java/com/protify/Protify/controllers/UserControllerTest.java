@@ -58,7 +58,7 @@ class UserControllerTest {
 
     @BeforeEach
     public void beforeEach(){
-
+        playlistRepository.deleteAll();
         userService.deleteAll();
         traverson = new FormsTraverson(mvc
 

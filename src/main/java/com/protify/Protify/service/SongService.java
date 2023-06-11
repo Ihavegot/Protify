@@ -58,4 +58,7 @@ public class SongService {
         return songRepository.save(updatedSong);
     }
 
+    public Songs save(Songs song) {
+        return  songRepository.save(song);
+    }
 }
