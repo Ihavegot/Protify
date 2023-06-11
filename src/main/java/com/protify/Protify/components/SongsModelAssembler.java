@@ -1,20 +1,15 @@
 package com.protify.Protify.components;
 
-import com.protify.Protify.controllers.PlaylistController;
 import com.protify.Protify.controllers.SongsController;
-import com.protify.Protify.controllers.UserController;
 import com.protify.Protify.dtos.ScoredSongDto;
 import com.protify.Protify.dtos.SongDto;
 import com.protify.Protify.mappers.SongMapper;
 import com.protify.Protify.models.Artist;
-import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
-import com.protify.Protify.models.User;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.mediatype.hal.HalModelBuilder;
 import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.hateoas.server.LinkRelationProvider;
@@ -39,23 +34,42 @@ public class SongsModelAssembler implements RepresentationModelAssembler<Songs, 
     private final EntityLinks links;
     private final LinkRelationProvider linkRelationProvider;
     @Override
-    public EntityModel<Songs> toModel(Songs entity) {
-        HalModelBuilder builder;
-        try {
-            builder = HalModelBuilder.halModelOf(entity)
-                    .link(links.linkToItemResource(entity, Songs::getId)
-                            .andAffordance(afford(methodOn(SongsController.class).deleteSong(entity.getId())))
-                            .andAffordance(afford(methodOn(SongsController.class).putSong(entity.getId(), new SongDto()))
-                    ));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public EntityModel<ScoredSongDto> toModel(Songs entity) {
+
+
+
+
+        Link self = links.linkToItemResource(entity, Songs::getId);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Collection<String> authorities = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+
+
+        if(authorities.contains("ROLE_USER")){
+            self = self             .andAffordance(afford(methodOn(SongsController.class).putSongsScore(entity.getId(), null)));
         }
+
+        if( authorities.contains("ROLE_ADMIN")){
+
+            self = self             .andAffordance(afford(methodOn(SongsController.class).deleteSong(entity.getId())))
+                    .andAffordance(afford(methodOn(SongsController.class).putSong(entity.getId(), new SongDto())));
+
+        }
+
+        ScoredSongDto model = Mappers.getMapper(SongMapper.class).songToScoredSong(entity, entity.getScores().stream().filter(
+                score-> Objects.equals(score.getUser().getLogin(), auth.getName())
+        ).findFirst().orElse(null));
+
+        HalModelBuilder
+                builder = HalModelBuilder.halModelOf(model).link(self);
+
+
         if (entity.getArtist() != null) {
 
             builder = builder
                     .preview(entity.getArtist())
                     .forLink(links.linkToItemResource(entity.getArtist(), Artist::getId).withRel(linkRelationProvider.getItemResourceRelFor(Artist.class)))
-        ;}
-        return (EntityModel<Songs>) builder.build();
-    }
+            ;}
+
+        return (EntityModel<ScoredSongDto>) builder.build();
 }
