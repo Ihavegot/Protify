@@ -40,7 +40,7 @@ public class HomeController {
                                 .getUser(null, null, null, null))
                                 .withRel(linkRelationProvider.getCollectionResourceRelFor(User.class)),
                         linkTo(methodOn(ArtistController.class)
-                                .getArtists(null, null, null, null))
+                                .getArtist(null, null, null, null))
                                 .withRel(linkRelationProvider.getCollectionResourceRelFor(Artist.class))
                 )
         );

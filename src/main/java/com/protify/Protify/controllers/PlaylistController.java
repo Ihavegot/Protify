@@ -13,18 +13,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.*;
 import org.springframework.hateoas.server.ExposesResourceFor;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.swing.text.html.parser.Entity;
-import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.afford;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -51,9 +45,8 @@ public class PlaylistController {
         Page<Playlist> playlistPage = playlistService.getPlaylist(page);
         return pagedResourcesAssembler.toModel(playlistPage, playlistModelAssembler)
                 .mapLink(IanaLinkRelations.SELF, link->link.andAffordance(
-                        afford(methodOn(PlaylistController.class).addSinglePlaylist(null))
-                        )
-                        );
+                        afford(methodOn(PlaylistController.class).postPlaylist(null)))
+                );
     }
 
     @GetMapping("{id}")
@@ -70,37 +63,37 @@ public class PlaylistController {
                                                            @RequestParam(required = false) String[] sort) {
         Page<Songs> songsPage = songService.getSongsByPlaylist(id, page);
         PagedModel<EntityModel<Songs>> songPage = songsPagedResourcesAssembler.toModel(songsPage, songsModelAssembler);
-        songPage.getContent().forEach((song) ->song.mapLink(IanaLinkRelations.SELF, link -> link.andAffordance(afford(methodOn(PlaylistController.class).deleteSongFromPlaylist(null)))));
+        songPage.getContent().forEach((song) ->song.mapLink(IanaLinkRelations.SELF, link -> link.andAffordance(afford(methodOn(PlaylistController.class).deletePlaylistSong(null)))));
         return songPage;
     }
 
     @PostMapping
     @Operation(summary="Create Playlist")
-    public Playlist addSinglePlaylist(@RequestBody PlaylistDto playlist){
+    public Playlist postPlaylist(@RequestBody PlaylistDto playlist){
         return playlistService.addSinglePlaylist(playlist);
     }
 
     @PatchMapping("{id}")
     @Operation(summary="Update Playlist")
-    public ResponseEntity<Playlist> updateSinglePlaylist(@PathVariable("id") Long id, @RequestBody PlaylistTitleDto playlistTitleDto) {
+    public ResponseEntity<Playlist> patchPlaylist(@PathVariable("id") Long id, @RequestBody PlaylistTitleDto playlistTitleDto) {
         return ResponseEntity.of(playlistService.updateSinglePlaylist(id, playlistTitleDto));
     }
 
     @DeleteMapping("/songs/delete")
     @Operation(summary="From Playlist delete Song")
-    public ResponseEntity<Playlist> deleteSongFromPlaylist(@RequestBody PlaylistSongsDto playlist) {
+    public ResponseEntity<Playlist> deletePlaylistSong(@RequestBody PlaylistSongsDto playlist) {
         return ResponseEntity.of(playlistService.deleteSongFromPlaylist(playlist));
     }
 
     @PostMapping("/songs/add")
     @Operation(summary="To Playlist add Song")
-    public ResponseEntity<Playlist> addSongToPlaylist(@RequestBody PlaylistSongsDto playlist) {
+    public ResponseEntity<Playlist> postPlaylistSong(@RequestBody PlaylistSongsDto playlist) {
         return ResponseEntity.of(playlistService.addSongToPlaylist(playlist));
     }
 
     @DeleteMapping("{id}")
     @Operation(summary="Delete Playlist")
-    public ResponseEntity<Playlist> deleteSinglePlaylist(@PathVariable("id") Long id) {
+    public ResponseEntity<Playlist> deletePlaylist(@PathVariable("id") Long id) {
         playlistService.deleteSinglePlaylist(id);
         return ResponseEntity.ok(null);
     }

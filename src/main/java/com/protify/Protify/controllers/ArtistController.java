@@ -4,7 +4,6 @@ import com.protify.Protify.components.ArtistModelAssembler;
 import com.protify.Protify.components.SongsModelAssembler;
 import com.protify.Protify.dtos.ArtistDto;
 import com.protify.Protify.models.Artist;
-import com.protify.Protify.models.Playlist;
 import com.protify.Protify.models.Songs;
 import com.protify.Protify.service.ArtistService;
 import com.protify.Protify.service.SongService;
@@ -15,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.ExposesResourceFor;
@@ -36,14 +34,15 @@ public class ArtistController {
 
     @GetMapping
     @Operation(summary="Get Artist list")
-    public PagedModel<EntityModel<Artist>> getArtists(@ParameterObject Pageable page, @RequestParam(required = false, name = "page") Integer p,
-                                                      @RequestParam(required = false) Integer size,
-                                                      @RequestParam(required = false) String[] sort) {
+    public PagedModel<EntityModel<Artist>> getArtist(@ParameterObject Pageable page, @RequestParam(required = false, name = "page") Integer p,
+                                                     @RequestParam(required = false) Integer size,
+                                                     @RequestParam(required = false) String[] sort) {
         Page<Artist> artistPage = artistService.getArtist(page);
         return pagedResourcesAssembler.toModel(artistPage, artistModelAssembler);
     }
 
-    @GetMapping("{id}")    @Operation(summary="Get Artist")
+    @GetMapping("{id}")
+    @Operation(summary="Get Artist")
     public EntityModel<Artist> getSingleArtist(@PathVariable("id") Long id) {
         Artist artist = artistService.getSingleArtist(id);
         return artistModelAssembler.toModel(artist);
@@ -51,27 +50,27 @@ public class ArtistController {
 
     @GetMapping("{id}/songs")
     @Operation(summary="Get Artist's Song list")
-    public PagedModel<EntityModel<Songs>> getSongsByArtist(@PathVariable("id") Long id, @ParameterObject Pageable page) {
+    public PagedModel<EntityModel<Songs>> getArtistSongs(@PathVariable("id") Long id, @ParameterObject Pageable page) {
         Page<Songs> songsPage = songService.getSongsByArtist(id, page);
         return songsPagedResourcesAssembler.toModel(songsPage, songsModelAssembler);
     }
 
     @PostMapping
     @Operation(summary="Create Artist")
-    public Artist addSingleArtist(@RequestBody ArtistDto artist) {
+    public Artist postArtist(@RequestBody ArtistDto artist) {
         return artistService.addSingleArtist(artist);
     }
 
     @PutMapping("{id}")
     @Operation(summary="Update Artist")
-    public ResponseEntity<Artist> updateSingleArtist(@PathVariable("id") Long id, @RequestBody ArtistDto artistDto) throws Exception {
+    public ResponseEntity<Artist> putArtist(@PathVariable("id") Long id, @RequestBody ArtistDto artistDto) throws Exception {
         Artist artist = artistService.updateSingleArtist(id, artistDto);
         return ResponseEntity.ok(artist);
     }
 
     @DeleteMapping("{id}")
     @Operation(summary="Delete Artist")
-    public ResponseEntity<Artist> deleteSingleArtist(@PathVariable("id") Long id) {
+    public ResponseEntity<Artist> deleteArtist(@PathVariable("id") Long id) {
         artistService.deleteSingleArtist(id);
         return ResponseEntity.ok(null);
     }
