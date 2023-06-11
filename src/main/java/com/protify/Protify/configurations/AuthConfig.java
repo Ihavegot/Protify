@@ -30,6 +30,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -65,9 +67,12 @@ import java.util.UUID;
         flows = @OAuthFlows(authorizationCode = @OAuthFlow(
                 authorizationUrl = "http://localhost:8080/oauth2/authorize"
                 , tokenUrl = "http://localhost:8080/oauth2/token",scopes = {
-                @OAuthScope(name = "openid"),
-                @OAuthScope(name = "profile"),
-                @OAuthScope(name = "playlists")
+                        @OAuthScope(name=OidcScopes.OPENID),
+                @OAuthScope(name=OidcScopes.PROFILE)
+
+
+
+
                 })))
 public class AuthConfig {
 
@@ -101,12 +106,11 @@ public class AuthConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                 .permitAll()
-                .requestMatchers(HttpMethod.GET,"/**")
+                .requestMatchers(HttpMethod.GET,"/**")       .permitAll()
+                .requestMatchers(HttpMethod.OPTIONS,"/**")
                 .permitAll()
-                .requestMatchers("/users/**")
-                .hasAuthority("SCOPE_profile")
-                .requestMatchers("/playlists/**")
-                .hasAuthority("SCOPE_playlists")
+                .requestMatchers(HttpMethod.HEAD,"/**")
+                .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -192,10 +196,10 @@ public       UserDetailsService userDetailsService(){
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .authorizationGrantType(AuthorizationGrantType.JWT_BEARER)
                 .redirectUri("http://localhost:8080/swagger-ui/oauth2-redirect.html")
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
-                .scope("playlists")
                 .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
                 .build();
 
