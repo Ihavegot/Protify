@@ -33,10 +33,9 @@ import java.util.Objects;
 public class SongsModelAssembler implements RepresentationModelAssembler<Songs, EntityModel<ScoredSongDto>> {
     private final EntityLinks links;
     private final LinkRelationProvider linkRelationProvider;
+
     @Override
     public EntityModel<ScoredSongDto> toModel(Songs entity) {
-
-
 
 
         Link self = links.linkToItemResource(entity, Songs::getId);
@@ -45,19 +44,19 @@ public class SongsModelAssembler implements RepresentationModelAssembler<Songs, 
         Collection<String> authorities = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 
 
-        if(authorities.contains("ROLE_USER")){
-            self = self             .andAffordance(afford(methodOn(SongsController.class).putSongsScore(entity.getId(), null)));
+        if (authorities.contains("ROLE_USER")) {
+            self = self.andAffordance(afford(methodOn(SongsController.class).putSongsScore(entity.getId(), null)));
         }
 
-        if( authorities.contains("ROLE_ADMIN")){
+        if (authorities.contains("ROLE_ADMIN")) {
 
-            self = self             .andAffordance(afford(methodOn(SongsController.class).deleteSong(entity.getId())))
+            self = self.andAffordance(afford(methodOn(SongsController.class).deleteSong(entity.getId())))
                     .andAffordance(afford(methodOn(SongsController.class).putSong(entity.getId(), new SongDto())));
 
         }
 
         ScoredSongDto model = Mappers.getMapper(SongMapper.class).songToScoredSong(entity, entity.getScores().stream().filter(
-                score-> Objects.equals(score.getUser().getLogin(), auth.getName())
+                score -> Objects.equals(score.getUser().getLogin(), auth.getName())
         ).findFirst().orElse(null));
 
         HalModelBuilder
@@ -69,7 +68,9 @@ public class SongsModelAssembler implements RepresentationModelAssembler<Songs, 
             builder = builder
                     .preview(entity.getArtist())
                     .forLink(links.linkToItemResource(entity.getArtist(), Artist::getId).withRel(linkRelationProvider.getItemResourceRelFor(Artist.class)))
-            ;}
+            ;
+        }
 
         return (EntityModel<ScoredSongDto>) builder.build();
+    }
 }
