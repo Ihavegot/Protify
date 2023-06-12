@@ -105,7 +105,7 @@ public class UserController {
     @DeleteMapping("{id}")
     @Operation(summary="Delete User")
     
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @UserService.getSingle(#id).login == authentication.principal.name")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @userService.getSingle(#id).login == authentication.principal.username")
     public ResponseEntity<EntityModel<User>> deleteUser(@PathVariable("id") Long id, @RequestHeader(required = false) @Parameter(hidden = true) String Accept) {
         var user = userService.getSingle(id);
         userService.delete(user);
@@ -121,7 +121,7 @@ public class UserController {
     @PutMapping("{id}")
     @Operation(summary="Update User")
     
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @UserService.getSingle(#id).login == authentication.principal.name")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @userService.getSingle(#id).login == authentication.principal.username")
     public ResponseEntity<EntityModel<User>> putUser(@PathVariable Long id, @RequestBody @Valid UserDto body, @RequestHeader(required = false) @Parameter(hidden = true) String Accept) {
 
         User user = Mappers.getMapper(UserMapper.class).create(body);
@@ -138,7 +138,7 @@ public class UserController {
     @PatchMapping("{id}")
     @Operation(summary="Update User")
     
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @UserService.getSingle(#id).login == authentication.principal.name")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #user.login == authentication.principal.username")
     public ResponseEntity<EntityModel<User>> patchUser(@PathVariable("id") @Parameter(schema = @Schema(type="integer")) User user, @Valid @RequestBody UserDto body, @RequestHeader(required = false) @Parameter(hidden=true) String Accept) {
         Mappers.getMapper(UserMapper.class).update(user, body);
 
