@@ -1,6 +1,9 @@
 # *Protify - Music Player*
 
+---
+
 ## Project created and maintained for the SKW - Frameworks course
+
 
 ### This project features a music player API with functionalities like:
 
@@ -15,6 +18,7 @@
 
 - permision for CRUD operations on every single entity
 
+
 ## Technologies used
 - Spring & Spring Boot
 - PostgreSQL
@@ -25,7 +29,9 @@
 - Gabriel Maruszewski
 - Patryk Wałach
 
-## Initialization
+---
+
+## Docker PostgreSQL
 
 *Docker initialization command*
 
@@ -43,5 +49,14 @@ Go to: http://localhost:8080/h2-console
 - **JDBC URL:** jdbc:postgresql://localhost:32770/protify
 - **User Name:** postgres
 - **Password:**
- 
+
+---
+
+## Database
+
+*Models and relations*
+
+![Models](doc/DiagramERD.png)
+
+---
  ![Testy](https://pbs.twimg.com/media/CiLWjAQVEAIae7z.jpg)
