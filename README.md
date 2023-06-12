@@ -2,6 +2,19 @@
 
 ## Project created and maintained for the SKW - Frameworks course
 
+### This project features a music player API with functionalities like:
+
+#### As a user
+
+- creating your own account
+- searching and getting your favourite music
+- creating and updating your playlists
+- giving your music your personal score
+
+#### As an administrator
+
+- permision for CRUD operations on every single entity
+
 ## Technologies used
 - Spring & Spring Boot
 - PostgreSQL
