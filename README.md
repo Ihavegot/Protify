@@ -6,7 +6,6 @@
 - Spring & Spring Boot
 - PostgreSQL
 - Swagger
-- Remix
 
 ## Team
 - Łukasz Bociański
@@ -30,14 +29,6 @@ Go to: http://localhost:8080/h2-console
 - **Driver Class:** org.postgresql.Driver
 - **JDBC URL:** jdbc:postgresql://localhost:32770/protify
 - **User Name:** postgres
-- **Password:** 
-
-## TODO
-
-- Add DB models and test data
-- Add SwaggerUI
-- Add basic endpoints
-- Create tests
-- Check Azure Blob Storage
+- **Password:**
  
  ![Testy](https://pbs.twimg.com/media/CiLWjAQVEAIae7z.jpg)
