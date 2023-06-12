@@ -59,4 +59,5 @@ Go to: http://localhost:8080/h2-console
 ![Models](doc/DiagramERD.png)
 
 ---
+
  ![Testy](https://pbs.twimg.com/media/CiLWjAQVEAIae7z.jpg)
