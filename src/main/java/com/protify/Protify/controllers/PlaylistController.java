@@ -74,7 +74,7 @@ public class PlaylistController {
 
     @PostMapping
     
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @SongService.getSingleSong(#id).user.login == authentication.principal.name")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @songService.getSingleSong(#id).user.login == authentication.principal.username")
     @Operation(summary="Create Playlist")
     public Playlist addSinglePlaylist(@RequestBody PlaylistDto playlist){
         return playlistService.addSinglePlaylist(playlist);
@@ -82,7 +82,7 @@ public class PlaylistController {
 
     @PatchMapping("{id}")
     
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @SongService.getSingleSong(#id).user.login == authentication.principal.name")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @songService.getSingleSong(#id).user.login == authentication.principal.username")
     @Operation(summary="Update Playlist")
     public ResponseEntity<Playlist> updateSinglePlaylist(@PathVariable("id") Long id, @RequestBody PlaylistTitleDto playlistTitleDto) {
         return ResponseEntity.of(playlistService.updateSinglePlaylist(id, playlistTitleDto));
@@ -90,7 +90,7 @@ public class PlaylistController {
 
     @DeleteMapping("/songs/delete")
     
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @SongService.getSingleSong(#playlist.playlistId).user.login == authentication.principal.name")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @songService.getSingleSong(#playlist.playlistId).user.login == authentication.principal.username")
     @Operation(summary="From Playlist delete Song")
     public ResponseEntity<Playlist> deleteSongFromPlaylist(@RequestBody PlaylistSongsDto playlist) {
         return ResponseEntity.of(playlistService.deleteSongFromPlaylist(playlist));
@@ -98,7 +98,7 @@ public class PlaylistController {
 
     @PostMapping("/songs/add")
     
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @SongService.getSingleSong(#playlist.playlistId).user.login == authentication.principal.name")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @songService.getSingleSong(#playlist.playlistId).user.login == authentication.principal.username")
     @Operation(summary="To Playlist add Song")
     public ResponseEntity<Playlist> addSongToPlaylist(@RequestBody PlaylistSongsDto playlist) {
         return ResponseEntity.of(playlistService.addSongToPlaylist(playlist));
@@ -106,7 +106,7 @@ public class PlaylistController {
 
     @DeleteMapping("{id}")
     
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @SongService.getSingleSong(#id).user.login == authentication.principal.name")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @songService.getSingleSong(#id).user.login == authentication.principal.username")
     @Operation(summary="Delete Playlist")
     public ResponseEntity<Playlist> deleteSinglePlaylist(@PathVariable("id") Long id) {
         playlistService.deleteSinglePlaylist(id);

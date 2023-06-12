@@ -1,9 +1,11 @@
 package com.protify.Protify.controllers;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.PathNotFoundException;
 import com.protify.Protify.ModelValidators;
 import com.protify.Protify.ProtifyApplication;
 import com.protify.Protify.adapter.FormsTraverson;
@@ -216,6 +218,26 @@ class UserControllerTest {
         softly.assertThat(userService.findAll(Pageable.unpaged())).hasSize(0);
 
             ModelValidators.validateUser(softly, result.getContent(),user);
+
+    }
+
+
+    @Test
+    @WithMockUser(username="foo")
+    void deleteDifferentUser() throws Exception {
+        userService.save(User.builder().login("bar").build());
+        var user = userService.save(User.builder().login("foo").build());
+
+
+        //when
+        var request = traverson.follow("users", "$._embedded.users[0]._links.self.href");
+        //then
+        softly.assertThatThrownBy(()-> request.<String>toObject("$._templates.default.method")).isInstanceOf(PathNotFoundException.class);
+
+
+      request
+                .delete("self").toResult().andExpect(status().isForbidden());
+
 
     }
 

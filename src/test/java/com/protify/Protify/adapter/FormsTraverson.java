@@ -13,6 +13,8 @@ import org.springframework.hateoas.mediatype.hal.forms.Jackson2HalFormsModule;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -29,7 +31,7 @@ private final  ObjectMapper mapper;
 
     public FormsTraverson(MockMvc mvc) {
         this.mvc = mvc;
-        this.builder =  new Builder(()->mvc .perform(MockMvcRequestBuilders.get("/").accept(MediaTypes.HAL_FORMS_JSON)).andReturn().getResponse().getContentAsString());
+        this.builder =  new Builder(()->mvc .perform(MockMvcRequestBuilders.get("/").accept(MediaTypes.HAL_FORMS_JSON)));
         this.mapper = new ObjectMapper();
         this.mapper.registerModules(
 
@@ -116,7 +118,7 @@ private final  ObjectMapper mapper;
     }
     public class Builder {
 
-        private final Callable<String> previousResponse;
+        private final Callable<ResultActions> previousResult;
 
 
 
@@ -129,22 +131,22 @@ private final  ObjectMapper mapper;
         }
 
         public <T> T toObject(TypeReference<T> typeReference) throws Exception {
-            return  mapper.readValue(previousResponse.call(), typeReference);
+            return  mapper.readValue(toContent(), typeReference);
         }
 
         public <T> T toObject() throws Exception {
-            return  mapper.readValue(previousResponse.call(), new TypeReference<>() {
+            return  mapper.readValue(toContent(), new TypeReference<>() {
             });
         }
 
 
         public <T> T toObject(String path) throws Exception {
-            return  JsonPath.read(previousResponse.call(), path);
+            return  JsonPath.read(toContent(), path);
         }
 
 
-        public Builder(Callable<String> previousResponse) {
-            this.previousResponse = previousResponse;
+        public Builder(Callable<ResultActions> previousResult) {
+            this.previousResult = previousResult;
         }
 
         public Builder follow(String rel){
@@ -176,10 +178,18 @@ private final  ObjectMapper mapper;
             return follow(method, new Hop(rel), body);
         }
 
+        public ResultActions  toResult() throws Exception {
+            return previousResult.call();
+        }
+
+        private  String toContent() throws Exception {
+            return  toResult().andExpect((status().is2xxSuccessful())).andReturn().getResponse().getContentAsString();
+        }
+
         private
         Builder follow(HttpMethod method, Hop  hop, Object body ){
             return new Builder(()-> {
-                String response = previousResponse.call();
+                String response = toContent();
 
                 URI uri;
 
@@ -216,7 +226,7 @@ private final  ObjectMapper mapper;
                 }
 
 
-                return                mvc.perform(request).andExpect((status().is2xxSuccessful())).andReturn().getResponse().getContentAsString();
+                return                mvc.perform(request);
 
             }
 
