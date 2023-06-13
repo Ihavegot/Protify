@@ -24,7 +24,8 @@ public class Songs {
     @JoinColumn(name = "artist")
     @JsonIgnore
     private Artist artist;
-    private Blob songFile;
+    @Column(columnDefinition = "varchar default 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'")
+    private String songFile;
 
     @ManyToMany(mappedBy = "songs", cascade = CascadeType.REMOVE)
     @JsonIgnore

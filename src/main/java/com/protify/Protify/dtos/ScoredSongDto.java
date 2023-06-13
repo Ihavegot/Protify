@@ -24,7 +24,7 @@ public class ScoredSongDto {
     private String title;
 
 
-    private Blob songFile;
+    private String songFile;
 
     private  Float score;
 
