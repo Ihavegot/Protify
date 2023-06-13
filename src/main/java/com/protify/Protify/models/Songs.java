@@ -24,7 +24,7 @@ public class Songs {
     @JoinColumn(name = "artist")
     @JsonIgnore
     private Artist artist;
-    private Blob songFile;
+    private String songFile;
 
     @ManyToMany(mappedBy = "songs", cascade = CascadeType.REMOVE)
     @JsonIgnore
