@@ -29,22 +29,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-@RestController @SecurityRequirement(name="security_auth")
+@RestController
+@SecurityRequirement(name = "security_auth")
 @ExposesResourceFor(Songs.class)
-@RequestMapping(value="/songs", produces = {MediaTypes.HAL_JSON_VALUE, MediaTypes.HAL_FORMS_JSON_VALUE})
+@RequestMapping(value = "/songs", produces = {MediaTypes.HAL_JSON_VALUE, MediaTypes.HAL_FORMS_JSON_VALUE})
 @RequiredArgsConstructor
 public class SongsController {
     private final SongService songService;
     private final SongsModelAssembler songsModelAssembler;
     private final PagedResourcesAssembler<Songs> pagedResourcesAssembler;
-    private final UserRepository userRepository;
-@NonNull
-private final UserService userService;
-@NonNull
+    @NonNull
+    private final UserService userService;
+    @NonNull
     private ScoreService scoreService;
 
     @GetMapping
-    @Operation(summary="Song list")
+    @Operation(summary = "Song list")
     public PagedModel<EntityModel<ScoredSongDto>> getSongs(@ParameterObject Pageable page, @RequestParam(required = false, name = "page") Integer p,
                                                            @RequestParam(required = false) Integer size,
                                                            @RequestParam(required = false) String[] sort) {
@@ -53,32 +53,28 @@ private final UserService userService;
     }
 
     @GetMapping("{id}")
-    @Operation(summary="Get Song")
+    @Operation(summary = "Get Song")
     public EntityModel<ScoredSongDto> getSingleSong(@PathVariable("id") Long id) {
         Songs entity = songService.getSingleSong(id);
         return songsModelAssembler.toModel(entity);
     }
 
     @PostMapping
-    @Operation(summary="Create Song")
-    
-
+    @Operation(summary = "Create Song")
     public Songs postSong(@RequestBody SongDto song) {
         return songService.postSong(song);
     }
 
     @PutMapping("{id}")
-    @Operation(summary="Update Song")
-    
-
-    public ResponseEntity<Songs> putSong(@PathVariable("id") Long id, @RequestBody SongDto songDto)  {
+    @Operation(summary = "Update Song")
+    public ResponseEntity<Songs> putSong(@PathVariable("id") Long id, @RequestBody SongDto songDto) {
         Songs song = songService.putSong(id, songDto);
         return ResponseEntity.ok(song);
     }
 
     @PutMapping("{id}/score")
-    @Operation(summary="Update Song's Score")
-    public ResponseEntity<EntityModel<ScoredSongDto>> putSongsScore(@PathVariable("id") Long id, @RequestBody SongScoreDto scoreDto)  {
+    @Operation(summary = "Update Song's Score")
+    public ResponseEntity<EntityModel<ScoredSongDto>> putSongsScore(@PathVariable("id") Long id, @RequestBody SongScoreDto scoreDto) {
         Songs song = songService.getSingleSong(id);
         User user = userService.findByLogin(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
 
@@ -89,15 +85,11 @@ private final UserService userService;
         );
 
 
-
-
         return ResponseEntity.ok(songsModelAssembler.toModel(songService.save(song)));
     }
 
     @DeleteMapping("{id}")
-    @Operation(summary="Delete Song")
-    
-
+    @Operation(summary = "Delete Song")
     public ResponseEntity<EntityModel<ScoredSongDto>> deleteSong(@PathVariable("id") Long id) {
         var song = songService.getSingleSong(id);
         songService.deleteSong(id);

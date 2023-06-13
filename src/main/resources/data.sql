@@ -50,6 +50,8 @@ INSERT INTO "user" (email, login, password) VALUES
 ('madison@example.com', 'madison123', '{noop}password123'),
 ('jayden@example.com', 'jayden123', '{noop}password123');
 
+INSERT INTO "user" (email, authorities, login, password) VALUES
+    ('admin@example.com','ROLE_ADMIN', 'admin', '{noop}admin');
 INSERT INTO artist (artist_name, name, surname) VALUES
                                                     ('AC/DC', 'Malcolm', 'Young'),
                                                     ('AC/DC', 'Angus', 'Young'),

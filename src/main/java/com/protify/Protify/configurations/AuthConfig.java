@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -56,6 +57,8 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -69,19 +72,18 @@ import java.util.UUID;
         openIdConnectUrl = "http://localhost:8080/.well-known/openid-configuration",
         flows = @OAuthFlows(authorizationCode = @OAuthFlow(
                 authorizationUrl = "http://localhost:8080/oauth2/authorize"
-                , tokenUrl = "http://localhost:8080/oauth2/token",scopes = {
-                        @OAuthScope(name=OidcScopes.OPENID),
-                @OAuthScope(name=OidcScopes.PROFILE)
+                , tokenUrl = "http://localhost:8080/oauth2/token", scopes = {
+                @OAuthScope(name = OidcScopes.OPENID),
+                @OAuthScope(name = OidcScopes.PROFILE)
 
 
-
-
-                })))
+        })))
 public class AuthConfig {
 
 
-    @Bean public PasswordEncoder passwordEncoder(){
-        return  PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean
@@ -89,7 +91,7 @@ public class AuthConfig {
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-                .oidc(Customizer.withDefaults());	// Enable OpenID Connect 1.0
+                .oidc(Customizer.withDefaults());    // Enable OpenID Connect 1.0
         http
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()))
                 .exceptionHandling((exceptions) -> exceptions
@@ -104,17 +106,17 @@ public class AuthConfig {
 
     @Bean
     @Order(2)
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService) throws Exception {
         http.csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                 .permitAll()
-                .requestMatchers(HttpMethod.PUT,"/songs/*/score")       .authenticated()
-                .requestMatchers(HttpMethod.POST,"/users")       .permitAll()
-                .requestMatchers(HttpMethod.GET,"/**")       .permitAll()
-                .requestMatchers(HttpMethod.OPTIONS,"/**")
+                .requestMatchers(HttpMethod.PUT, "/songs/*/score").authenticated()
+                .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                .requestMatchers(HttpMethod.GET, "/**").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**")
                 .permitAll()
-                .requestMatchers(HttpMethod.HEAD,"/**")
+                .requestMatchers(HttpMethod.HEAD, "/**")
                 .permitAll()
                 .requestMatchers("/songs/**")
                 .hasRole("ROLE_ADMIN")
@@ -124,46 +126,55 @@ public class AuthConfig {
                 .authenticated()
                 .and()
                 .formLogin(Customizer.withDefaults())
+                .oauth2ResourceServer((oauth2) -> oauth2.jwt((jwt) -> jwt.jwtAuthenticationConverter((token) -> {
+                    UserDetails user = userDetailsService.loadUserByUsername(token.getSubject());
+                    return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                })))
         ;
 
         return http.build();
     }
+
     @NonNull
-    private final UserService userService
-            ;
+    private final UserService userService;
 
 
     @Bean
 
-public       UserDetailsService userDetailsService(){
-        return  (login -> userService.findByLogin(login)
-                .map(Mappers.getMapper(UserDetailsMapper.class)::map).orElseThrow(()->new UsernameNotFoundException("User not found")));
+    public UserDetailsService userDetailsService() {
+        return (login -> userService.findByLogin(login)
+                .map(Mappers.getMapper(UserDetailsMapper.class)::map).orElseThrow(() -> new UsernameNotFoundException("User not found")));
     }
 
     @Getter
     @NoArgsConstructor
     @Setter
-    public static class  UserDetailsDto implements  UserDetails{
-        private  String password;
-        private  String username;
-        private List<? extends GrantedAuthority> authorities ;
-        private boolean accountNonExpired=true;
-        private boolean accountNonLocked=true;
-        private boolean credentialsNonExpired=true ;
-        private boolean enabled =true;
+    public static class UserDetailsDto implements UserDetails {
+        private String password;
+        private String username;
+        private List<? extends GrantedAuthority> authorities;
+        private boolean accountNonExpired = true;
+        private boolean accountNonLocked = true;
+        private boolean credentialsNonExpired = true;
+        private boolean enabled = true;
     }
+
     @Mapper
-    interface UserDetailsMapper{
+    interface UserDetailsMapper {
         @Mapping(target = "username", source = "login")
-        @Mapping(target = "enabled",  ignore = true)
-        @Mapping(target = "credentialsNonExpired",  ignore = true)
-        @Mapping(target = "accountNonLocked",  ignore = true)
+        @Mapping(target = "enabled", ignore = true)
+        @Mapping(target = "credentialsNonExpired", ignore = true)
+        @Mapping(target = "accountNonLocked", ignore = true)
         @Mapping(target = "accountNonExpired", ignore = true)
         UserDetailsDto map(User user);
 
-       default SimpleGrantedAuthority map(String role){
-            return  new SimpleGrantedAuthority(role);
-        };
+        default List<SimpleGrantedAuthority> map(String role) {
+            if (role == null)
+                role = "ROLE_USER";
+            return Collections.singletonList(new SimpleGrantedAuthority(role));
+        }
+
+        ;
     }
 
     @Bean
@@ -207,6 +218,7 @@ public       UserDetailsService userDetailsService(){
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .authorizationGrantType(AuthorizationGrantType.JWT_BEARER)
                 .redirectUri("http://localhost:8080/swagger-ui/oauth2-redirect.html")
+                .redirectUri("https://oauth.pstmn.io/v1/callback")
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
                 .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
