@@ -66,8 +66,6 @@ public class UserController {
         Page<User> users = userService.findAll(pageable);
         PagedModel<EntityModel<User>> model = pagedUserAssembler.toModel(users, userModelAssembler);
 
-        System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
-
         model.mapLink(IanaLinkRelations.SELF, link ->
                 link.andAffordance(afford(methodOn(UserController.class).postUser(null, null)))
         );
