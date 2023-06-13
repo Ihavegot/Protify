@@ -1,22 +1,5 @@
 # *Protify - Music Player*
 
-## Project created and maintained for the SKW - Frameworks course
-
-
-### This project features a music player API with functionalities like:
-
-#### As a user
-
-- Creating your own account
-- Searching and getting your favourite music
-- Creating and updating your playlists
-- Giving your music your personal score
-
-#### As an administrator
-
-- Permision for CRUD operations on every single entity
-
-
 ## Technologies used
 - Spring Boot
 - PostgreSQL
@@ -27,6 +10,8 @@
 - Łukasz Bociański
 - Gabriel Maruszewski
 - Patryk Wałach
+
+### More info about project in [doc](doc/README.md)
 
 ---
 
@@ -49,14 +34,15 @@ Go to: http://localhost:8080/h2-console
 - **User Name:** postgres
 - **Password:**
 
----
+## Protify API
 
-## Database
+*Application runs on local machine. After start you can navigate to:*
 
-*Models and relations*
+- http://localhost:8080/
 
-![Models](doc/DiagramERD.png)
+*or*
 
----
+- http://localhost:8080/swagger-ui.html
 
- ![Testy](https://pbs.twimg.com/media/CiLWjAQVEAIae7z.jpg)
+
+
