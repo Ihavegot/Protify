@@ -1,7 +1,5 @@
 # *Protify - Music Player*
 
----
-
 ## Project created and maintained for the SKW - Frameworks course
 
 
@@ -9,20 +7,21 @@
 
 #### As a user
 
-- creating your own account
-- searching and getting your favourite music
-- creating and updating your playlists
-- giving your music your personal score
+- Creating your own account
+- Searching and getting your favourite music
+- Creating and updating your playlists
+- Giving your music your personal score
 
 #### As an administrator
 
-- permision for CRUD operations on every single entity
+- Permision for CRUD operations on every single entity
 
 
 ## Technologies used
-- Spring & Spring Boot
+- Spring Boot
 - PostgreSQL
 - Swagger
+- Spring Security
 
 ## Team
 - Łukasz Bociański
