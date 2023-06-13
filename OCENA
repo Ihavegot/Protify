@@ -1,0 +1,9 @@
+Ocena na którą aspirujemy: 4.5
+Stopień spełnienia wymagań:
+    * Wymagania na ocenę "4" dla aplikacji:
+        - Wszystkie podpunkty wymagane na ocenę 4
+    * Wymagania na ocenę wyższą niż "4":
+        - Hateoas
+        - Wykorzystanie Swaggeer'a
+        - Korzystanie ze starterów SpringBoot'a
+        - OAuth2.0 i JWT
